@@ -1,14 +1,14 @@
 <!doctype html>
 <html>
-	<head>
-		<title>jIRCs Test</title>
-		<script src="jircs.js"></script>
-		<script>
-			window.conn = new IRC(new WebSocket("ws://23.21.47.44:8000"));
-			window.conn.nick('jIRCs-test');
-		</script>
-	</head>
-	<body>
-		<h1>Hope it works!</h1>
-	</body>
+    <head>
+        <title>jIRCs Test</title>
+        <script src="jircs.js"></script>
+        <script>
+            var irc = new jIRCs(new WebSocket("ws://23.21.47.44:8000"));
+            irc.nick('jIRCs-test');
+        </script>
+    </head>
+    <body>
+        <h1>Hope it works!</h1>
+    </body>
 </html>
