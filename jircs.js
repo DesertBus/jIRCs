@@ -60,7 +60,7 @@ jIRCs.prototype.send = function(command, args) {
     var msg = command;
     if(typeof args == 'object')
         msg += ' ' + args.join(' ');
-    if(this.conn.readyState == this.conn.OPEN) {
+    if(this.conn.readyState == 1) { //OPEN
         console.log('>>> ' + msg);
         this.conn.send(msg + '\r\n');
     } else {

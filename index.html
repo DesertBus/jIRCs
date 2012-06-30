@@ -2,13 +2,15 @@
 <html>
     <head>
         <title>jIRCs Test</title>
+        <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
         <script src="jircs.js"></script>
+        <script src="utils.js"></script>
         <script src="gui.js"></script>
         <script src="irc_commands.js"></script>
         <script src="user_commands.js"></script>
         <script>
             function randrange(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
-            var irc = new jIRCs(new WebSocket("ws://23.21.47.44:8000"));
+            var irc = new jIRCs(new SockJS("http://23.21.47.44:8000/proxy"));
             irc.nick('jIRCs-' + randrange(1000,9999));
             
             window.onbeforeunload = function (e) {

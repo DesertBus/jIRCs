@@ -50,6 +50,8 @@ jIRCs.prototype.renderLine = function(speaker, message) {
         row.appendChild(date);
         row.appendChild(user);
         row.appendChild(text);
+        /* Auto-linkify links */
+        text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger);
         this.displays.forEach(function(t) {
             var d = t.getElementsByTagName('div')[0];
             var b = (d.scrollHeight < d.clientHeight || d.scrollHeight == d.scrollTop + d.clientHeight);
