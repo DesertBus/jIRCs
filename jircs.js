@@ -27,31 +27,21 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Public interface */
 function jIRCs(conn) {
-    this.id = this.rand(1000,9999);
     this.buf = '';
     this.queue = [];
+    this.displays = [];
+    this.channels = [];
+    this.window = '';
+    this.nickname = '';
     this.conn = conn;
     this.conn.parent = this;
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
     this.conn.onmessage = function(e) { this.parent.onmessage(e); };
     this.conn.onclose = function(e) { this.parent.ondisconnect(e); };
 }
-jIRCs.prototype.nick = function(nick) { this.send('USER',[nick,nick,nick,':'+nick]); this.send('NICK',[nick]); };
-/* Private interface */
-jIRCs.prototype.rand = function(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
-jIRCs.prototype.jIRCs_PING = function(prefix, args) { this.send('PONG',args); };
-jIRCs.prototype.send = function(command, args) {
-    var msg = command;
-    if(typeof args == 'object')
-        msg += ' ' + args.join(' ');
-    if(this.conn.readyState == this.conn.OPEN) {
-        console.log('>>> ' + msg);
-        this.conn.send(msg + '\r\n');
-    } else {
-        console.log('||| ' + msg);
-        this.queue.push(msg);
-    }
-};
+jIRCs.prototype.nick = function(nick) { this.nickname = nick; this.send('USER',[nick,nick,nick,':'+nick]); this.send('NICK',[nick]); };
+
+
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
     this.queue.forEach(this.send, this);
@@ -65,6 +55,39 @@ jIRCs.prototype.onmessage = function(evt) {
     var lines = this.buf.split("\n");
     this.buf = lines.pop();
     lines.forEach(this.parseMessage, this);
+};
+jIRCs.prototype.send = function(command, args) {
+    var msg = command;
+    if(typeof args == 'object')
+        msg += ' ' + args.join(' ');
+    if(this.conn.readyState == this.conn.OPEN) {
+        console.log('>>> ' + msg);
+        this.conn.send(msg + '\r\n');
+    } else {
+        console.log('||| ' + msg);
+        this.queue.push(msg);
+    }
+};
+jIRCs.prototype.say = function(message, location) {
+    if(!location)
+        location = this.window;
+    var args = [location, ':' + message];
+    this.send('PRIVMSG', args);
+    this.irc_PRIVMSG(this.nickname, args);
+}
+jIRCs.prototype.handleLine = function(message) {
+    if(message.charAt(0) == '/') {
+        var args = message.substr(1).split(' ');
+        var command = args.shift().toUpperCase();
+        var method = 'command_' + command;
+        if(method in this) {
+            this[method](args);
+        } else {
+            this.send(command, args);
+        }
+    } else {
+        this.say(message);
+    }
 };
 jIRCs.prototype.parseMessage = function(s) {
     var method = '',
@@ -82,16 +105,17 @@ jIRCs.prototype.parseMessage = function(s) {
         s = args.join(' ');
     }
     if(s.indexOf(' :') != -1) {
-        args = s.split(' :');
-        trailing = ':'+args[1];
-        args = args[0].split(' ');
+        var msg = s.split(' :');
+        args = msg.shift().split(' ');
+        trailing = ':'+msg.join(' :');
         args.push(trailing);
     } else {
         args = s.split(' ');
     }
     command = args.shift();
-    method = 'jIRCs_' + command.toUpperCase();
+    method = 'irc_' + command.toUpperCase();
     console.log("<<< " + method + "('" + p + "'," + JSON.stringify(args) + ")");
     if(method in this)
         this[method](p, args);
 };
+jIRCs.prototype.getNick = function(prefix) { return prefix.split('!')[0]; };

@@ -18,4 +18,4 @@ Include jircs.js, and pass a websocket-like object to the constructor
 License
 =======
 
-SockJS-Twisted is (c) 2012 Christopher Gamble and is made available under the BSD license.
+jIRCs is (c) 2012 Christopher Gamble and is made available under the BSD license.
