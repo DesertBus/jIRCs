@@ -11,9 +11,6 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
     var channel = args.pop().substr(1);
     this.renderLine(channel, '', prefix + " joined " + channel);
-    if(this.getNick(prefix) == this.nickname) {
-        this.activateChan(channel);
-    }
 };
 
 jIRCs.prototype.irc_PART = function(prefix, args) { 

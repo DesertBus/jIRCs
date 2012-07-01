@@ -1,6 +1,6 @@
-jIRCs.prototype.command_ME = function(args) {
+jIRCs.prototype.command_ME = function(args, disobj) {
     var message = '\u0001ACTION ' + args.join(' ') + '\u0001';
-    this.say(message);
+    this.say(message, disobj.window);
 };
 
 jIRCs.prototype.command_CTCP = function(args) {

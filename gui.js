@@ -1,18 +1,23 @@
 jIRCs.prototype.display = function(domobj) {
-    /* Javascript fires as soon as the script element is parsed
-    * so we don't need to go find the script, we can just append
-    * to the end of the document.body and we'll end up in the same place.
-    * if people want to aim jIRCs at a container, they can provide domobj.
-    *var scripts = document.getElementsByTagName('script');
-    *var self = scripts[scripts.length - 1];
-    */
-    if (!domobj)
-        domobj = document.body;
+    if (!domobj) {
+        var scripts = document.getElementsByTagName('script');
+        domobj = scripts[scripts.length - 1].parentNode;
+    }
     var container = document.createElement('div');
     var window = document.createElement('div');
     var tabbar = document.createElement('div');
     var form = document.createElement('form');
     var input = document.createElement('input');
+    var disobj = {
+        'container': container,
+        'messagebox': input,
+        'tabBar': tabbar,
+        'form': form,
+        'chatWindow': window,
+        'channels': {},
+        'window': '',
+        'windowHistory': []
+    };
     container.className = "jircs_main";
     tabbar.className = "jircs_tabBar";
     form.className = "jircs_form";
@@ -20,8 +25,8 @@ jIRCs.prototype.display = function(domobj) {
     window.className = "jircs_window";
     self = this;
     form.onsubmit = function() {
-        self.handleLine(self.messagebox.value);
-        self.messagebox.value = '';
+        self.handleLine(input.value, disobj);
+        input.value = '';
         return false;
     };
     input.type = 'text';
@@ -34,26 +39,20 @@ jIRCs.prototype.display = function(domobj) {
     container.appendChild(window);
     container.appendChild(form);
     domobj.appendChild(container);
-    this.container = container;
-    this.messagebox = input;
-    this.tabBar = tabbar;
-    this.form = form;
-    this.chatWindow = window;
     //set up Status window
-    this.initChan("Status");
-    this.activateChan("Status");
+    this.initChan("Status", disobj);
+    this.activateChan("Status", disobj);
+    this.displays.push(disobj);
 }
-jIRCs.prototype.initChan = function(channel) {
-    var chat = document.createElement('div');
+jIRCs.prototype.initChan = function(channel, disobj) {
     var table = document.createElement('table');
     var tab = document.createElement('span');
-    chat.className = "jircs_channel";
     table.className = "jircs_chatTable";
     tab.className = "jircs_tab";
     tab.appendChild(document.createTextNode(channel));
     self = this;
     tab.onclick = function() {
-        self.activateChan(channel);
+        self.activateChan(channel, disobj);
     };
     if (channel != "Status") {
         var closeBtn = document.createElement("span");
@@ -64,42 +63,49 @@ jIRCs.prototype.initChan = function(channel) {
         closeBtn.className = "jircs_tab_closeBtn";
         tab.appendChild(closeBtn);
     }
-    chat.appendChild(table);
-    this.tabBar.appendChild(tab);
-    chat.tab = tab;
-    chat.table = table;
-    chat.style.visibility = "hidden"; //hide new channel
-    this.chatWindow.appendChild(chat);
-    this.displays[channel] = chat;
+    disobj.tabBar.appendChild(tab);
+    table.style.display = "none"; //hide new channel
+    disobj.chatWindow.appendChild(table);
+    disobj.channels[channel] = {'table': table, 'tab': tab};
 }
 jIRCs.prototype.destroyChan = function(channel) {
-    if (channel != 'Status' && this.displays[channel]) {
+    if (channel != 'Status' && this.channels.indexOf(channel) != -1) {
        //part channel
        this.send("PART",channel);
-       //remove from DOM
-       this.tabBar.removeChild(this.displays[channel].tab);
-       this.chatWindow.removeChild(this.displays[channel]);
-       //destroy
-       delete(this.displays[channel]);
-       //pick a channel to activate
-       var newchan = this.windowHistory.pop();
-       while (!this.display[newchan]) newchan = this.windowHistory.pop();
-       this.activateChan(newchan);
+       //Iterate through displays
+       this.displays.forEach(function(disobj) {
+           //remove from DOM
+           disobj.tabBar.removeChild(disobj.channels[channel].tab);
+           disobj.chatWindow.removeChild(disobj.channels[channel].table);
+           //destroy
+           delete(disobj.channels[channel]);
+           //pick a channel to activate
+           var newchan = disobj.windowHistory.pop();
+           while (!disobj.channels[newchan]) newchan = disobj.windowHistory.pop();
+           this.activateChan(newchan, disobj);
+       }, this);
     }   
 }
-jIRCs.prototype.activateChan = function(channel) {
-    if (this.displays[channel] && this.window != channel) {
-        for (var chan in this.displays) {
-            this.displays[chan].style.visibility = "hidden";
-            if (this.displays[chan].tab.className.indexOf("jircs_tab_attention") >= 0 && chan != channel)
-                this.displays[chan].tab.className = "jircs_tab jircs_tab_attention"
-            else 
-                this.displays[chan].tab.className = "jircs_tab";
-        }
-        this.displays[channel].style.visibility = "visible";
-        this.displays[channel].tab.className += " jircs_tab_active";
-        this.windowHistory.push(this.window);
-        this.window = channel;
+jIRCs.prototype.activateChan = function(channel, disobj) {
+    if (disobj.channels[channel] && disobj.window != channel) {
+        this.displays.forEach(function(idisobj) {
+            for (var chan in idisobj.channels) {
+                var fixer = '';
+                if(idisobj == disobj)
+                    disobj.channels[chan].table.style.display = "none";
+                else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") >= 0)
+                    fixer = ' jircs_tab_active';
+                if (idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") >= 0 && chan != channel)
+                    idisobj.channels[chan].tab.className = "jircs_tab jircs_tab_attention"
+                else 
+                    idisobj.channels[chan].tab.className = "jircs_tab";
+                idisobj.channels[chan].tab.className += fixer;  
+            }
+        }, this);
+        disobj.channels[channel].table.style.display = "table";
+        disobj.channels[channel].tab.className += " jircs_tab_active";
+        disobj.windowHistory.push(disobj.window);
+        disobj.window = channel;
     }
 }
 jIRCs.prototype.renderLine = function(channel, speaker, message) {
@@ -130,10 +136,19 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
         row.appendChild(text);
         /* Auto-linkify links */
         text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger);
-        if (!this.displays[channel])
-            this.initChan(channel);
-        this.displays[channel].table.appendChild(row);
-        this.displays[channel].scrollTop += 100; //always attempt to scroll, it'll actually only scroll if it needs to. 
-        if (channel != this.window)
-            this.displays[channel].tab.className += " jircs_tab_attention";
+        if(this.channels.indexOf(channel) != -1)
+            this.channels.push(channel);
+        // Track open channels
+        var open = [];
+        for(var d in this.displays)
+            open.push(this.displays[d].window);
+        this.displays.forEach(function(disobj) {
+            if (!disobj.channels[channel])
+                this.initChan(channel, disobj);
+            var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight == disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight);
+            disobj.channels[channel].table.appendChild(row.cloneNode(true));
+            if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; //Only scroll when user is at the bottom
+            if (open.indexOf(channel) == -1)
+                disobj.channels[channel].tab.className += " jircs_tab_attention";
+        }, this);
 };

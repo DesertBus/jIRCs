@@ -1,19 +1,8 @@
 .jircs_window
 {
-    position:relative;
     height:600px;
     width:100%;
-}   
-
-.jircs_channel
-{
-    position:absolute;
-    top:0px;
-    left:0px;
-    height:600px;
     overflow:auto;
-    border:1px solid black;
-    width:100%;
 }
 
 .jircs_chatTable
