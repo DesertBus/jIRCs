@@ -12,7 +12,7 @@
         <script>
             function randrange(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
             var irc = new jIRCs(new SockJS("http://23.21.47.44:8000/proxy"));
-            irc.nick('daves_jIRCs-' + randrange(1000,9999));
+            irc.nick('jIRCs-' + randrange(1000,9999));
             
             window.onbeforeunload = function (e) {
                 var message = "Are you sure you want to leave?";
@@ -26,8 +26,5 @@
     </head>
     <body>
         <script>irc.display();</script>
-        <br/>
-        <br/>
-        <a href="../jIRCs.tar.gz">Download Source</a>
     </body>
 </html>
