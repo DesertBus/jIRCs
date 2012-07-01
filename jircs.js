@@ -29,9 +29,9 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 function jIRCs(conn) {
     this.buf = '';
     this.queue = [];
-    this.displays = [];
-    this.channels = [];
+    this.displays = {};
     this.window = '';
+    this.windowHistory = [];
     this.nickname = '';
     this.conn = conn;
     this.conn.parent = this;
@@ -44,11 +44,13 @@ jIRCs.prototype.nick = function(nick) { this.nickname = nick; this.send('USER',[
 
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
+    this.renderLine('','','Connected to server.');
     this.queue.forEach(this.send, this);
     this.queue = [];
 };
 jIRCs.prototype.ondisconnect = function(evt) {
     console.log("Disconnected");
+    this.renderLine('','','Disconnected from server.');
 };
 jIRCs.prototype.onmessage = function(evt) {
     this.buf += evt.data;

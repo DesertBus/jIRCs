@@ -1,0 +1,119 @@
+.jircs_window
+{
+    position:relative;
+    height:600px;
+    width:100%;
+}   
+
+.jircs_channel
+{
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:600px;
+    overflow:auto;
+    border:1px solid black;
+    width:100%;
+}
+
+.jircs_chatTable
+{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.jircs_chatRow
+{
+    border-bottom:1px solid gray;
+}
+
+.jircs_chatDate
+{
+    width:80px;
+}
+
+.jircs_chatUser
+{
+    width:160px;
+}
+
+.jircs_chatText
+{
+    border-left:1px solid gray;
+}
+
+.jircs_action
+{
+    font-style:italic;
+}
+
+.jircs_input
+{
+    display:block;
+    width:100%;
+}
+
+.jircs_tabBar
+{
+    background-color:#AAA;
+    border-radius:5px 5px 0px 0px;
+}
+
+.jircs_tab
+{
+    color:#222;
+    background-color:#CCC;
+    margin-left:5px;
+    border:1px solid black;
+    border-bottom:0px;
+    border-radius:5px 5px 0px 0px;
+    padding-left:10px;
+    padding-right:15px;
+    overflow:hidden;
+    position:relative; /*captures the close button*/
+}
+
+.jircs_tab:hover
+{
+    background-color:#DDD;
+}
+
+.jircs_tab_active
+{
+    color:#000;
+    background-color:#FFF;
+}
+
+.jircs_tab_active:hover
+{
+    background-color:#FFF;
+}
+
+.jircs_tab_attention
+{
+    background-color:#FFC;
+}
+
+.jircs_tab_attention:hover
+{
+    background-color:#FFD;
+}
+
+.jircs_tab_closeBtn
+{
+    color:#000;
+    font-size:0.6em;
+    position:absolute;
+    top:0px;
+    right:0px;
+    padding-left:2px;
+    padding-right:2px;
+    border-left:1px solid black;
+    border-bottom:1px solid black;
+    border-radius:0px 0px 0px 5px;
+}
+
+.jircs_tab_closeBtn:hover
+{
+    background-color:Red;
+}
