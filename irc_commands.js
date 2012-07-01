@@ -3,9 +3,13 @@ jIRCs.prototype.irc_PING = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_NICK = function(prefix, args) {
-    if(this.getNick(prefix) == this.nickname) {
-        this.nickname = args.pop().substr(1);
+    var oldNick = this.getNick(prefix),
+        newNick = args.pop().substr(1);
+    if(oldNick == this.nickname) {
+        this.nickname = newNick;
     }
+    // TODO: Make this show up in all channels where relevant (needs userlists)
+    this.renderLine('','',oldNick + ' is now known as ' + newNick);
 };
 
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
