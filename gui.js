@@ -24,6 +24,12 @@ jIRCs.prototype.display = function(domobj) {
     input.className = "jircs_input";
     window.className = "jircs_window";
     self = this;
+    container.addEventListener("click", function(e) {
+        if(e.target && e.target.className == 'jircs_channel_link') {
+            self.send('JOIN',[e.target.innerHTML]);
+            e.preventDefault();
+        }
+    });
     form.onsubmit = function() {
         self.handleLine(input.value, disobj);
         input.value = '';
@@ -148,7 +154,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
                 this.initChan(channel, disobj);
             var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight == disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight);
             var r = row.cloneNode(true);
-            r.innerHTML = r.innerHTML.replace(/\b(#[^\s:,])\b/ig,'<a href="$1" class="jircs_channel_link">$1</a>'); // Auto-linkify channels
+            r.innerHTML = r.innerHTML.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
             disobj.channels[channel].table.appendChild(r);
             if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; // Only scroll when user is at the bottom
             if (open.indexOf(channel) == -1)
