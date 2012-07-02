@@ -30,7 +30,8 @@ function jIRCs(conn) {
     this.buf = '';
     this.queue = [];
     this.displays = [];
-    this.channels = [];
+    this.channels = {};
+    this.statuses = {};
     this.nickname = '';
     this.conn = conn;
     this.conn.parent = this;

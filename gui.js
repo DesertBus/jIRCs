@@ -71,7 +71,7 @@ jIRCs.prototype.initChan = function(channel, disobj) {
 jIRCs.prototype.destroyChan = function(channel) {
     if (channel != 'Status' && channel in this.channels) {
        //part channel
-       this.send("PART",channel);
+       this.send("PART",[channel]);
        //Iterate through displays
        this.displays.forEach(function(disobj) {
            //remove from DOM
@@ -81,9 +81,11 @@ jIRCs.prototype.destroyChan = function(channel) {
            delete(disobj.channels[channel]);
            //pick a channel to activate
            var newchan = disobj.windowHistory.pop();
-           while (!disobj.channels[newchan]) newchan = disobj.windowHistory.pop();
+           while (newchan && !disobj.channels[newchan]) newchan = disobj.windowHistory.pop() || false;
+           if(!newchan) newchan = 'Status';
            this.activateChan(newchan, disobj);
        }, this);
+       delete(this.channels[channel]);
     }   
 }
 jIRCs.prototype.activateChan = function(channel, disobj) {
