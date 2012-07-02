@@ -136,8 +136,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
         else
             row.appendChild(user);
         row.appendChild(text);
-        /* Auto-linkify links */
-        text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger);
+        text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger); // Auto-linkify links
         if(!(channel in this.channels))
             this.channels[channel] = {} // Add a new object in which we can store channel data
         // Track open channels
@@ -148,8 +147,10 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
             if (!disobj.channels[channel])
                 this.initChan(channel, disobj);
             var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight == disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight);
-            disobj.channels[channel].table.appendChild(row.cloneNode(true));
-            if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; //Only scroll when user is at the bottom
+            var r = row.cloneNode(true);
+            r.innerHTML = r.innerHTML.replace(/\b(#[^\s:,])\b/ig,'<a href="$1" class="jircs_channel_link">$1</a>'); // Auto-linkify channels
+            disobj.channels[channel].table.appendChild(r);
+            if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; // Only scroll when user is at the bottom
             if (open.indexOf(channel) == -1)
                 disobj.channels[channel].tab.className += " jircs_tab_attention";
         }, this);
