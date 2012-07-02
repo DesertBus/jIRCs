@@ -226,7 +226,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
         this.displays.forEach(function(disobj) {
             if (!disobj.channels[channel])
                 this.initChan(channel, disobj);
-            var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight == disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight);
+            var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight <= disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight + 5); // 5px buffer just in case
             var r = row.cloneNode(true);
             r.innerHTML = r.innerHTML.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
             disobj.channels[channel].table.appendChild(r);
