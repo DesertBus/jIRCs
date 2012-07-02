@@ -3,9 +3,13 @@ jIRCs.prototype.display = function(domobj) {
         var scripts = document.getElementsByTagName('script');
         domobj = scripts[scripts.length - 1].parentNode;
     }
-    var container = document.createElement('div');
-    var window = document.createElement('div');
-    var tabbar = document.createElement('div');
+    var container = document.createElement('table');
+    var windowR = document.createElement('tr');
+    var tabbarR = document.createElement('tr');
+    var formR = document.createElement('tr');
+    var formD = document.createElement('td');
+    var window = document.createElement('td');
+    var tabbar = document.createElement('td');
     var form = document.createElement('form');
     var input = document.createElement('input');
     var disobj = {
@@ -75,9 +79,13 @@ jIRCs.prototype.display = function(domobj) {
     container.onclick = function() {
         input.focus();
     };
-    container.appendChild(tabbar);
-    container.appendChild(window);
-    container.appendChild(form);
+    tabbarR.appendChild(tabbar);
+    windowR.appendChild(window);
+    formD.appendChild(form);
+    formR.appendChild(formD);
+    container.appendChild(tabbarR);
+    container.appendChild(windowR);
+    container.appendChild(formR);
     domobj.appendChild(container);
     //set up Status window
     this.initChan("Status", disobj);
