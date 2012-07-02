@@ -8,8 +8,13 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
     if(oldNick == this.nickname) {
         this.nickname = newNick;
     }
-    // TODO: Make this show up in all channels where relevant (needs userlists)
-    this.renderLine('','',oldNick + ' is now known as ' + newNick);
+    for(var channel in this.channels) {
+        if(this.channels.hasOwnProperty(channel) && 'names' in this.channels[channel] && oldNick in this.channels[channel].names) {
+            this.renderLine(channel,'',oldNick + ' is now known as ' + newNick);
+            this.channels[channel].names[newNick] = this.channels[channel].names[oldNick];
+            delete(this.channels[channel].names[oldNick]);
+        }
+    }
 };
 
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
