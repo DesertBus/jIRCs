@@ -69,7 +69,7 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     disobj.channels[channel] = {'table': table, 'tab': tab};
 }
 jIRCs.prototype.destroyChan = function(channel) {
-    if (channel != 'Status' && this.channels.indexOf(channel) != -1) {
+    if (channel != 'Status' && channel in this.channels) {
        //part channel
        this.send("PART",channel);
        //Iterate through displays
@@ -136,8 +136,8 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
         row.appendChild(text);
         /* Auto-linkify links */
         text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger);
-        if(this.channels.indexOf(channel) != -1)
-            this.channels.push(channel);
+        if(!(channel in this.channels))
+            this.channels[channel] = {} // Add a new object in which we can store channel data
         // Track open channels
         var open = [];
         for(var d in this.displays)
