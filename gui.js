@@ -36,6 +36,40 @@ jIRCs.prototype.display = function(domobj) {
         return false;
     };
     input.type = 'text';
+    input.onkeydown = function(e) {
+        var keyCode = e.keyCode || e.which; 
+        if(keyCode == 9) {
+            // Get cursor position
+            var cursor = 0;
+            if (e.target.createTextRange) {
+                var r = document.selection.createRange().duplicate()
+                r.moveEnd('character', e.target.value.length)
+                if (r.text == '')
+                    return e.target.value.length
+                cursor = e.target.value.lastIndexOf(r.text)
+            } else {
+                cursor = e.target.selectionStart
+            }
+            var begin = e.target.value.lastIndexOf(' ',cursor) + 1;
+            var end = e.target.value.indexOf(' ',cursor);
+            if(end == -1) end = e.target.value.length;
+            var name = e.target.value.substring(begin,end);
+            var possible = [];
+            // Complete the name
+            for(var n in self.channels[disobj.window].names) {
+                if(self.channels[disobj.window].names.hasOwnProperty(n) && n.substring(0,name.length).toLowerCase() == name.toLowerCase())
+                    possible.push(n);
+            }
+            if(possible.length == 1)
+                name = possible[0];
+            else if(possible.length == 0)
+                self.renderLine(disobj.window,'','No Possible Nicknames');
+            else
+                self.renderLine(disobj.window,'','Possible Nicknames: '+possible.join(' '));
+            e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
+            e.preventDefault();
+        }
+    };
     form.appendChild(input);
     //give focus to input box whenever chat is clicked
     container.onclick = function() {
