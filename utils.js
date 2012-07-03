@@ -69,7 +69,9 @@ jIRCs.prototype.zip = function(keys, values) {
 };
 
 jIRCs.prototype.forEach = function(object, fn, scope) {
-    if(object.forEach) {
+    if(!object) {
+        // Do nothing if undefined
+    } else if(object.forEach) {
         object.forEach(fn, scope);
     } else if(object.length) {
         for(var i = 0, len = object.length; i < len; ++i) {
