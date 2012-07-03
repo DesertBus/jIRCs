@@ -93,11 +93,11 @@ jIRCs.prototype.display = function(domobj) {
             var name = e.target.value.substring(begin,end);
             var possible = [];
             // Complete the name
-            for(var n in self.channels[disobj.window].names) {
-                if(self.channels[disobj.window].names.hasOwnProperty(n) && n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
+            self.channels[disobj.window].names.forEach(function(status, n) {
+                if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
                     possible.push(n);
                 }
-            }
+            }, self);
             if(possible.length == 1) {
                 name = possible[0];
             } else if(possible.length == 0) {
@@ -199,23 +199,23 @@ jIRCs.prototype.destroyChan = function(channel) {
 jIRCs.prototype.activateChan = function(channel, disobj) {
     if (disobj.channels[channel] && disobj.window != channel) {
         this.displays.forEach(function(idisobj) {
-            for (var chan in idisobj.channels) {
+            idisobj.channels.forEach(function(c, chan) {
                 var newClass = 'jircs_tab';
                 if(idisobj == disobj) {
                     disobj.channels[chan].table.style.display = "none";
-                } else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") != -1) {
+                } else if(c.tab.className.indexOf("jircs_tab_active") != -1) {
                     newClass += ' jircs_tab_active';
                 }
                 if(chan != channel) {
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") != -1) {
+                    if(c.tab.className.indexOf("jircs_tab_attention") != -1) {
                         newClass += " jircs_tab_attention"
                     }
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_hilight") != -1) {
+                    if(c.tab.className.indexOf("jircs_tab_hilight") != -1) {
                         newClass += " jircs_tab_hilight"
                     }
                 }
-                idisobj.channels[chan].tab.className = newClass;  
-            }
+                c.tab.className = newClass;  
+            }, this);
         }, this);
         disobj.channels[channel].table.style.display = "table";
         disobj.channels[channel].tab.className += " jircs_tab_active";
@@ -263,9 +263,9 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         }
         // Track open channels
         var open = [];
-        for(var d in this.displays) {
-            open.push(this.displays[d].window);
-        }
+        this.displays.forEach(function(d) {
+            open.push(d.window);
+        }, this);
         var displays = this.displays;
         if(disobj) {
             displays = [disobj];
@@ -330,8 +330,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
     disobj.userlistD.style.width = '0px';
     var users = {};
     var prefix = '', rank = '';
-    for(var u in this.channels[disobj.window].names) {
-        prefix = this.channels[disobj.window].names[u];
+    this.channels[disobj.window].names.forEach(function(prefix, u) {
         if(prefix.length) {
             prefix = prefix.charAt(0);
         }
@@ -340,7 +339,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
             users[rank] = [];
         }
         users[rank].push(prefix + u);
-    }
+    }, this);
     this.statusOrder.forEach(function(r) {
         if(!(r in users)) {
             return;

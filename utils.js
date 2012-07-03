@@ -59,3 +59,11 @@ jIRCs.prototype.parseMessage = function(s) {
 };
 
 jIRCs.prototype.getNick = function(prefix) { return prefix.split('!')[0]; };
+
+jIRCs.prototype.zip = function(keys, values) {
+    var r = {};
+    for(var i = 0, k, v; (k = keys[i]) && (v = values[i]); i++) {
+        r[k] = v;
+    }
+    return r;
+};

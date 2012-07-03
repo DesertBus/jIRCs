@@ -8,13 +8,13 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
     if(oldNick == this.nickname) {
         this.nickname = newNick;
     }
-    for(var channel in this.channels) {
-        if(this.channels.hasOwnProperty(channel) && 'names' in this.channels[channel] && oldNick in this.channels[channel].names) {
+    this.channels.forEach(function(c, channel) {
+        if(c.names && oldNick in c.names) {
             this.renderLine(channel,'',oldNick + ' is now known as ' + newNick);
-            this.channels[channel].names[newNick] = this.channels[channel].names[oldNick];
-            delete(this.channels[channel].names[oldNick]);
+            c.names[newNick] = c.names[oldNick];
+            delete(c.names[oldNick]);
         }
-    }
+    }, this);
     this.displays.forEach(function(disobj) {
         this.renderUserlist(disobj);
     }, this);
@@ -58,22 +58,22 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
 
 jIRCs.prototype.irc_QUIT = function(prefix, args) { 
     var reason = args.pop().substr(1);
-    for(var channel in this.channels) {
-        if(channel == "Status") {
-            continue;
+    this.channels.forEach(function(c, channel) {
+        if(channel == 'Status') {
+            return;
         }
-        if(this.channels[channel].names && prefix in this.channels[channel].names) {
-            this.renderLine(channel, '', prefix + " quit (" + reason + ")");
-            delete(this.channels[channel].names[prefix]);
+        if(c.names && prefix in c.names) {
+            this.renderLine(channel, '', prefix + ' quit (' + reason + ')');
+            delete(c.names[prefix]);
         }
-    }
+    }, this);
     if(this.getNick(prefix) == this.nickname) {
         // This is never triggered
-        for(var channel in this.channels) {
+        this.channels.forEach(function(c, channel) {
             if(channel != 'Status') {
                 this.destroyChan(channel);
             }
-        }
+        }, this);
     } else {
         this.displays.forEach(function(disobj) {
             this.renderUserlist(disobj);
@@ -116,18 +116,19 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_005 = function(prefix, args) {
-    for (var i = 1; i < args.length - 1; i++) { // skip the nickname and the "is supported by this server" message
-        if (args[i].substr(0,7) == "PREFIX=") {
-            this.statuses = {};
-            var modes = args[i].substr(8).split(')'); // exclude the open paren, split close paren
-            for (var j = 0; j < modes[0].length; j++) {
-                this.statuses[modes[1][j]] = modes[0][j]; // mapping of symbols to modes
-                this.statusOrder.push(modes[0][j]); // most important first
-            }
+    var server = args.shift();
+    var message = args.pop().substr(1);
+    args.forEach(function(arg) {
+        if(arg.substr(0,7).toUpperCase() == 'PREFIX=') {
+            var modes = arg.substr(8).split(')'); // exclude the open paren, split close paren
+            var symbols = modes[1].split('');
+            var letters = modes[0].split('');
+            this.statuses = this.zip(symbols, letters);
+            this.statusOrder = letters;
             this.statuses[''] = '';
             this.statusOrder.push('');
         }
-    }
+    }, this);
 };
 
 jIRCs.prototype.irc_353 = function(prefix, args) {

@@ -25,6 +25,17 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISE
 OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
+if ( !Object.prototype.forEach ) {
+    Object.prototype.forEach = function(fn, scope) {
+        for(var k in this) {
+            if(this.hasOwnProperty(k)) {
+                fn.call(scope || this, this[k], k, this); // fn(value, key, object)
+            }
+        }
+    };
+}
+
 if ( !Array.prototype.forEach ) {
     Array.prototype.forEach = function(fn, scope) {
         for(var i = 0, len = this.length; i < len; ++i) {
