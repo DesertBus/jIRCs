@@ -328,7 +328,6 @@ jIRCs.prototype.renderUserlist = function(disobj) {
     }
     disobj.userlist.innerHTML = "";
     disobj.userlistD.style.width = '0px';
-    disobj.channels[disobj.window].table.style.display = 'none';
     var users = {};
     var prefix = '', rank = '';
     for(var u in this.channels[disobj.window].names) {
