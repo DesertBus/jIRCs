@@ -71,30 +71,35 @@ jIRCs.prototype.display = function(domobj) {
             // Get cursor position
             var cursor = 0;
             if (e.target.createTextRange) {
-                var r = document.selection.createRange().duplicate()
-                r.moveEnd('character', e.target.value.length)
-                if (r.text == '')
-                    cursor = e.target.value.length
-                cursor = e.target.value.lastIndexOf(r.text)
+                var r = document.selection.createRange().duplicate();
+                r.moveEnd('character', e.target.value.length);
+                if (r.text == '') {
+                    cursor = e.target.value.length;
+                }
+                cursor = e.target.value.lastIndexOf(r.text);
             } else {
-                cursor = e.target.selectionStart
+                cursor = e.target.selectionStart;
             }
             var begin = e.target.value.lastIndexOf(' ',cursor) + 1;
             var end = e.target.value.indexOf(' ',cursor);
-            if(end == -1) end = e.target.value.length;
+            if(end == -1) {
+                end = e.target.value.length;
+            }
             var name = e.target.value.substring(begin,end);
             var possible = [];
             // Complete the name
             for(var n in self.channels[disobj.window].names) {
-                if(self.channels[disobj.window].names.hasOwnProperty(n) && n.substring(0,name.length).toLowerCase() == name.toLowerCase())
+                if(self.channels[disobj.window].names.hasOwnProperty(n) && n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
                     possible.push(n);
+                }
             }
-            if(possible.length == 1)
+            if(possible.length == 1) {
                 name = possible[0];
-            else if(possible.length == 0)
+            } else if(possible.length == 0) {
                 self.renderLine(disobj.window,'','No Possible Nicknames');
-            else
+            } else {
                 self.renderLine(disobj.window,'','Possible Nicknames: '+possible.join(' '));
+            }
             e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
             e.preventDefault();
         }
@@ -150,22 +155,26 @@ jIRCs.prototype.initChan = function(channel, disobj) {
 
 jIRCs.prototype.destroyChan = function(channel) {
     if (channel != 'Status' && channel in this.channels) {
-       //part channel
-       this.send("PART",[channel]);
-       //Iterate through displays
-       this.displays.forEach(function(disobj) {
-           //remove from DOM
-           disobj.tabBar.removeChild(disobj.channels[channel].tab);
-           disobj.chatWindow.removeChild(disobj.channels[channel].table);
-           //destroy
-           delete(disobj.channels[channel]);
-           //pick a channel to activate
-           var newchan = disobj.windowHistory.pop();
-           while (newchan && !disobj.channels[newchan]) newchan = disobj.windowHistory.pop() || false;
-           if(!newchan) newchan = 'Status';
-           this.activateChan(newchan, disobj);
-       }, this);
-       delete(this.channels[channel]);
+        //part channel
+        this.send("PART",[channel]);
+        //Iterate through displays
+        this.displays.forEach(function(disobj) {
+            //remove from DOM
+            disobj.tabBar.removeChild(disobj.channels[channel].tab);
+            disobj.chatWindow.removeChild(disobj.channels[channel].table);
+            //destroy
+            delete(disobj.channels[channel]);
+            //pick a channel to activate
+            var newchan = disobj.windowHistory.pop();
+            while (newchan && !disobj.channels[newchan]) {
+                newchan = disobj.windowHistory.pop() || false;
+            }
+            if(!newchan) {
+                newchan = 'Status';
+            }
+            this.activateChan(newchan, disobj);
+        }, this);
+        delete(this.channels[channel]);
     }   
 };
 

@@ -20,14 +20,17 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
     var channel = args.pop().substr(1);
     this.renderLine(channel, '', prefix + " joined " + channel);
-    if(!this.channels[channel].names)
+    if(!this.channels[channel].names) {
         this.channels[channel].names = {};
+    }
     this.channels[channel].names[prefix] = "";
     this.displays.forEach(function(disobj) {
-        if(document.activeElement == disobj.messagebox && prefix == this.nickname)
+        if(document.activeElement == disobj.messagebox && prefix == this.nickname) {
             this.activateChan(channel, disobj);
-        if(disobj.window == channel)
+        }
+        if(disobj.window == channel) {
             this.renderUserlist(disobj);
+        }
     }, this);
 };
 
@@ -39,8 +42,34 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
         this.destroyChan(channel);
     } else {
         this.displays.forEach(function(disobj) {
-            if(disobj.window == channel)
+            if(disobj.window == channel) {
                 this.renderUserlist(disobj);
+            }
+        }, this);
+    }
+};
+
+jIRCs.prototype.irc_QUIT = function(prefix, args) { 
+    var reason = args.pop().substr(1);
+    for(var channel in this.channels) {
+        if(channel == "Status") {
+            continue;
+        }
+        if(prefix in this.channels[channel].names) {
+            this.renderLine(channel, '', prefix + " quit (" + reason + ")");
+            delete(this.channels[channel].names[prefix]);
+        }
+    }
+    if(this.getNick(prefix) == this.nickname) {
+        // This is never triggered
+        for(var channel in this.channels) {
+            if(channel != 'Status') {
+                this.destroyChan(channel);
+            }
+        }
+    } else {
+        this.displays.forEach(function(disobj) {
+            this.renderUserlist(disobj);
         }, this);
     }
 };
@@ -49,8 +78,9 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     var channel = args.shift();
     var message = args.pop().substr(1);
     //account for private messages
-    if (channel == this.nickname)
+    if (channel == this.nickname) {
         channel = prefix;
+    }
     if(message.charAt(0) == '\u0001') {
         message = message.split('\u0001')[1];
         if(message.substr(0,6).toUpperCase() == 'ACTION') {
@@ -74,7 +104,7 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
             this.statusOrder.push('');
         }
     }
-}
+};
 
 jIRCs.prototype.irc_353 = function(prefix, args) {
     if (!this.channels[args[2]].moreNames) {
@@ -95,29 +125,33 @@ jIRCs.prototype.irc_353 = function(prefix, args) {
 jIRCs.prototype.irc_366 = function(prefix, args) {
     this.channels[args[1]].moreNames = false;
     this.displays.forEach(function(disobj) {
-        if(disobj.window == args[1])
+        if(disobj.window == args[1]) {
             this.renderUserlist(disobj);
+        }
     }, this);
 };
 
 jIRCs.prototype.irc_332 = function(prefix, args) {
-    if(!this.channels[args[1]].topic)
+    if(!this.channels[args[1]].topic) {
         this.channels[args[1]].topic = {};
+    }
     this.channels[args[1]].topic.message = args[2].substr(1);
     this.displays.forEach(function(disobj) { if(disobj.window == args[1]) this.renderTopic(disobj); }, this);
 };
 
 jIRCs.prototype.irc_333 = function(prefix, args) {
-    if(!this.channels[args[1]].topic)
+    if(!this.channels[args[1]].topic) {
         this.channels[args[1]].topic = {};
+    }
     this.channels[args[1]].topic.creator = args[2];
     this.channels[args[1]].topic.time = new Date(args[3] * 1000);
     this.displays.forEach(function(disobj) { if(disobj.window == args[1]) this.renderTopic(disobj); }, this);
 };
 
 jIRCs.prototype.irc_TOPIC = function(prefix, args) {
-    if(!this.channels[args[0]].topic)
+    if(!this.channels[args[0]].topic) {
         this.channels[args[0]].topic = {};
+    }
     this.channels[args[0]].topic.creator = prefix;
     this.channels[args[0]].topic.time = new Date();
     this.channels[args[0]].topic.message = args[1].substr(1);

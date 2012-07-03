@@ -6,8 +6,9 @@ jIRCs.prototype.url_regex = new RegExp('(?:(https?|ftp|svn|git)://)?([a-z0-9.\\-
 
 jIRCs.prototype.linkMunger = function(match, protocol, domain, path, offset, string) {
     var url = match;
-    if(!protocol)
+    if(!protocol) {
         url = 'http://' + url;
+    }
     return '<a href="' + url + '" target="_blank">' + match + '</a>';
 };
 
@@ -52,8 +53,9 @@ jIRCs.prototype.parseMessage = function(s) {
     command = args.shift();
     method = 'irc_' + command.toUpperCase();
     console.log("<<< " + method + "('" + p + "'," + JSON.stringify(args) + ")");
-    if(method in this)
+    if(method in this) {
         this[method](p, args);
+    }
 };
 
 jIRCs.prototype.getNick = function(prefix) { return prefix.split('!')[0]; };

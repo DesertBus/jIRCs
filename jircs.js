@@ -39,30 +39,39 @@ function jIRCs(conn) {
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
     this.conn.onmessage = function(e) { this.parent.onmessage(e); };
     this.conn.onclose = function(e) { this.parent.ondisconnect(e); };
-}
-jIRCs.prototype.nick = function(nick) { this.nickname = nick; this.send('USER',[nick,nick,nick,':'+nick]); this.send('NICK',[nick]); };
+};
 
+jIRCs.prototype.nick = function(nick) {
+    this.nickname = nick;
+    this.send('USER',[nick,nick,nick,':'+nick]);
+    this.send('NICK',[nick]);
+};
 
+/* Private interface */
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
     this.renderLine('','','Connected to server.');
     this.queue.forEach(this.send, this);
     this.queue = [];
 };
+
 jIRCs.prototype.ondisconnect = function(evt) {
     console.log("Disconnected");
     this.renderLine('','','Disconnected from server.');
 };
+
 jIRCs.prototype.onmessage = function(evt) {
     this.buf += evt.data;
     var lines = this.buf.split("\n");
     this.buf = lines.pop();
     lines.forEach(this.parseMessage, this);
 };
+
 jIRCs.prototype.send = function(command, args) {
     var msg = command;
-    if(typeof args == 'object')
+    if(typeof args == 'object') {
         msg += ' ' + args.join(' ');
+    }
     if(this.conn.readyState == 1) { //OPEN
         console.log('>>> ' + msg);
         this.conn.send(msg + '\r\n');
@@ -71,9 +80,11 @@ jIRCs.prototype.send = function(command, args) {
         this.queue.push(msg);
     }
 };
+
 jIRCs.prototype.say = function(message, location) {
-    if(!location)
+    if(!location) {
         location = this.nickname;
+    }
     var args = [location, ':' + message];
     this.send('PRIVMSG', args);
     this.irc_PRIVMSG(this.nickname, args);
