@@ -18,7 +18,7 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
-    var channel = args.pop().substr(1);
+    var channel = args.pop().substr(1).toLowerCase();
     if(prefix != this.nickname) {
         this.renderLine(channel, '', prefix + " joined " + channel);
     } else {
@@ -39,7 +39,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_PART = function(prefix, args) { 
-    var channel = args.pop();
+    var channel = args.pop().toLowerCase();
     if(this.getNick(prefix) == this.nickname) {
         this.destroyChan(channel);
     } else {
@@ -79,7 +79,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_PRIVMSG = function(prefix, args) { 
-    var channel = args.shift();
+    var channel = args.shift().toLowerCase();
     var message = args.pop().substr(1);
     //account for private messages
     if (channel == this.nickname) {
@@ -111,9 +111,10 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_353 = function(prefix, args) {
-    if (!this.channels[args[2]].moreNames) {
-        this.channels[args[2]].names = {};
-        this.channels[args[2]].moreNames = true;
+    var channel = args[2].toLowerCase();
+    if (!this.channels[channel].moreNames) {
+        this.channels[channel].names = {};
+        this.channels[channel].moreNames = true;
     }
     var names = args[3].substr(1).split(' '); // Strip the colon and split the names out
     names.forEach(function(name) {
@@ -122,42 +123,46 @@ jIRCs.prototype.irc_353 = function(prefix, args) {
             statusList += name.charAt(0);
             name = name.substr(1);
         }
-        this.channels[args[2]].names[name] = statusList;
+        this.channels[channel].names[name] = statusList;
     }, this);
 };
 
 jIRCs.prototype.irc_366 = function(prefix, args) {
-    this.channels[args[1]].moreNames = false;
+    var channel = args[1].toLowerCase();
+    this.channels[channel].moreNames = false;
     this.displays.forEach(function(disobj) {
-        if(disobj.window == args[1]) {
+        if(disobj.window == channel) {
             this.renderUserlist(disobj);
         }
     }, this);
 };
 
 jIRCs.prototype.irc_332 = function(prefix, args) {
-    if(!this.channels[args[1]].topic) {
-        this.channels[args[1]].topic = {};
+    var channel = args[1].toLowerCase();
+    if(!this.channels[channel].topic) {
+        this.channels[channel].topic = {};
     }
-    this.channels[args[1]].topic.message = args[2].substr(1);
-    this.displays.forEach(function(disobj) { if(disobj.window == args[1]) this.renderTopic(disobj); }, this);
+    this.channels[channel].topic.message = args[2].substr(1);
+    this.displays.forEach(function(disobj) { if(disobj.window == channel) this.renderTopic(disobj); }, this);
 };
 
 jIRCs.prototype.irc_333 = function(prefix, args) {
-    if(!this.channels[args[1]].topic) {
-        this.channels[args[1]].topic = {};
+    var channel = args[1].toLowerCase();
+    if(!this.channels[channel].topic) {
+        this.channels[channel].topic = {};
     }
-    this.channels[args[1]].topic.creator = args[2];
-    this.channels[args[1]].topic.time = new Date(args[3] * 1000);
-    this.displays.forEach(function(disobj) { if(disobj.window == args[1]) this.renderTopic(disobj); }, this);
+    this.channels[channel].topic.creator = args[2];
+    this.channels[channel].topic.time = new Date(args[3] * 1000);
+    this.displays.forEach(function(disobj) { if(disobj.window == channel) this.renderTopic(disobj); }, this);
 };
 
 jIRCs.prototype.irc_TOPIC = function(prefix, args) {
-    if(!this.channels[args[0]].topic) {
-        this.channels[args[0]].topic = {};
+    var channel = args[0].toLowerCase();
+    if(!this.channels[channel].topic) {
+        this.channels[channel].topic = {};
     }
-    this.channels[args[0]].topic.creator = prefix;
-    this.channels[args[0]].topic.time = new Date();
-    this.channels[args[0]].topic.message = args[1].substr(1);
-    this.displays.forEach(function(disobj) { if(disobj.window == args[0]) this.renderTopic(disobj); }, this);
+    this.channels[channel].topic.creator = prefix;
+    this.channels[channel].topic.time = new Date();
+    this.channels[channel].topic.message = args[1].substr(1);
+    this.displays.forEach(function(disobj) { if(disobj.window == channel) this.renderTopic(disobj); }, this);
 };
