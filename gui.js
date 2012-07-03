@@ -203,14 +203,14 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
                 var newClass = 'jircs_tab';
                 if(idisobj == disobj) {
                     disobj.channels[chan].table.style.display = "none";
-                } else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") >= 0) {
+                } else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") != -1) {
                     newClass += ' jircs_tab_active';
                 }
                 if(chan != channel) {
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") >= 0) {
+                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") != -1) {
                         newClass += " jircs_tab_attention"
                     }
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_hilight") >= 0) {
+                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_hilight") != -1) {
                         newClass += " jircs_tab_hilight"
                     }
                 }
