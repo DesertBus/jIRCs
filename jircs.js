@@ -60,6 +60,12 @@ jIRCs.prototype.onconnect = function(evt) {
 };
 
 jIRCs.prototype.ondisconnect = function(evt) {
+    // Remove channel windows
+    this.forEach(this.channels, function(c, channel) {
+        if(channel != 'Status') {
+            this.destroyChan(channel);
+        }
+    }, this);
     console.log("Disconnected");
     this.renderLine('','','Disconnected from server.');
 };

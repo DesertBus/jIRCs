@@ -68,12 +68,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
         }
     }, this);
     if(this.getNick(prefix) == this.nickname) {
-        // This is never triggered
-        this.forEach(this.channels, function(c, channel) {
-            if(channel != 'Status') {
-                this.destroyChan(channel);
-            }
-        }, this);
+        // Let ondisconnect handle cleanup
     } else {
         this.forEach(this.displays, function(disobj) {
             this.renderUserlist(disobj);
