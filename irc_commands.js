@@ -85,17 +85,34 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     var channel = args.shift().toLowerCase();
     var message = args.pop().substr(1);
     //account for private messages
-    if (channel == this.nickname) {
-        channel = prefix;
+    if (channel == this.nickname.toLowerCase()) {
+        channel = prefix.toLowerCase();
     }
     if(message.charAt(0) == '\u0001') {
         message = message.split('\u0001')[1];
         if(message.substr(0,6).toUpperCase() == 'ACTION') {
             message = prefix + message.substr(6);
             prefix = '';
+            this.renderLine(channel, prefix, message);
+        } else {
+            args = message.split(' ');
+            var method = 'ctcp_' + args.shift().toUpperCase();
+            console.log("<<<<<< " + method + "('" + channel + "'," + JSON.stringify(args) + ")");
+            if(method in this) {
+                this[method](channel, args);
+            }
         }
+    } else {
+        this.renderLine(channel, prefix, message);
     }
-    this.renderLine(channel, prefix, message);
+};
+
+jIRCs.prototype.irc_NOTICE = function(prefix, args) {
+    var nick = '\u2013 ' + this.getNick(prefix) + ' \u2013'; // \u2013 is an en-dash
+    var message = args.pop().substr(1);
+    this.displays.forEach(function(disobj) {
+        this.renderLine(disobj.window, nick, message, disobj);
+    }, this);
 };
 
 jIRCs.prototype.irc_005 = function(prefix, args) {

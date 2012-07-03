@@ -42,6 +42,8 @@ function jIRCs(conn) {
     this.conn.onclose = function(e) { this.parent.ondisconnect(e); };
 };
 
+jIRCs.prototype.version = 'jIRCs 0.1';
+
 jIRCs.prototype.nick = function(nick) {
     this.nickname = nick;
     this.send('USER',[nick,nick,nick,':'+nick]);

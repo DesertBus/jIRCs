@@ -54,10 +54,15 @@ jIRCs.prototype.display = function(domobj) {
         }
         var dx = disobj.mouse.x - e.screenX,
             dy = disobj.mouse.y - e.screenY;
-        if(dx < 0) dx *= -1;
-        if(dy < 0) dy *= -1;
-        if(dx < 5 && dy < 5 && e.button == 0) //Make sure text selection works as expected 
+        if(dx < 0) {
+            dx *= -1;
+        }
+        if(dy < 0) {
+            dy *= -1;
+        }
+        if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
             input.focus();
+        }
     });
     form.addEventListener("submit", function(e) {
         self.handleLine(input.value, disobj);
@@ -196,15 +201,18 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
         this.displays.forEach(function(idisobj) {
             for (var chan in idisobj.channels) {
                 var newClass = 'jircs_tab';
-                if(idisobj == disobj)
+                if(idisobj == disobj) {
                     disobj.channels[chan].table.style.display = "none";
-                else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") >= 0)
+                } else if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_active") >= 0) {
                     newClass += ' jircs_tab_active';
+                }
                 if(chan != channel) {
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") >= 0)
+                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_attention") >= 0) {
                         newClass += " jircs_tab_attention"
-                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_hilight") >= 0)
+                    }
+                    if(idisobj.channels[chan].tab.className.indexOf("jircs_tab_hilight") >= 0) {
                         newClass += " jircs_tab_hilight"
+                    }
                 }
                 idisobj.channels[chan].tab.className = newClass;  
             }
@@ -218,9 +226,10 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
     }
 };
 
-jIRCs.prototype.renderLine = function(channel, speaker, message) {
-        if (!channel)
+jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
+        if (!channel) {
             channel = "Status";
+        }
         var now = new Date();
         var h = '' + now.getHours();
         var m = '' + now.getMinutes();
@@ -240,24 +249,31 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
         if(speaker == '') {
             text.className += " jircs_action";
             text.colSpan = 2;
-        }
-        else
+        } else {
             row.appendChild(user);
+        }
         var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
         if(nickCheck.test(message)) { // Hilight
             row.className += " jircs_hilight";
         }
         row.appendChild(text);
         text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger); // Auto-linkify links
-        if(!(channel in this.channels))
+        if(!(channel in this.channels)) {
             this.channels[channel] = {} // Add a new object in which we can store channel data
+        }
         // Track open channels
         var open = [];
-        for(var d in this.displays)
+        for(var d in this.displays) {
             open.push(this.displays[d].window);
-        this.displays.forEach(function(disobj) {
-            if (!disobj.channels[channel])
+        }
+        var displays = this.displays;
+        if(disobj) {
+            displays = [disobj];
+        }
+        displays.forEach(function(disobj) {
+            if (!disobj.channels[channel]) {
                 this.initChan(channel, disobj);
+            }
             var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight <= disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight + 5); // 5px buffer just in case
             var r = row.cloneNode(true);
             r.innerHTML = r.innerHTML.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
@@ -265,12 +281,16 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
             while(disobj.channels[channel].table.children.length > this.scrollbackSize) {
                 disobj.channels[channel].table.removeChild(disobj.channels[channel].table.firstChild);
             }
-            if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; // Only scroll when user is at the bottom
+            if(b) {
+                disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; // Only scroll when user is at the bottom
+            }
             if (open.indexOf(channel) == -1) {
-                if(disobj.channels[channel].tab.className.indexOf("jircs_tab_attention") == -1)
+                if(disobj.channels[channel].tab.className.indexOf("jircs_tab_attention") == -1) {
                     disobj.channels[channel].tab.className += " jircs_tab_attention";
-                if(disobj.channels[channel].tab.className.indexOf("jircs_tab_hilight") == -1 && nickCheck.test(message))
+                }
+                if(disobj.channels[channel].tab.className.indexOf("jircs_tab_hilight") == -1 && nickCheck.test(message)) {
                     disobj.channels[channel].tab.className += " jircs_tab_hilight";
+                }
             }
         }, this);
 };
@@ -303,8 +323,9 @@ jIRCs.prototype.renderTopic = function(disobj) {
 };
 
 jIRCs.prototype.renderUserlist = function(disobj) {
-    if(!(disobj.window in this.channels))
+    if(!(disobj.window in this.channels)) {
         return;
+    }
     disobj.userlist.innerHTML = "";
     disobj.userlistD.style.width = '0px';
     disobj.channels[disobj.window].table.style.display = 'none';
@@ -312,15 +333,19 @@ jIRCs.prototype.renderUserlist = function(disobj) {
     var prefix = '', rank = '';
     for(var u in this.channels[disobj.window].names) {
         prefix = this.channels[disobj.window].names[u];
-        if(prefix.length) prefix = prefix.charAt(0);
+        if(prefix.length) {
+            prefix = prefix.charAt(0);
+        }
         rank = prefix in this.statuses ? this.statuses[prefix] : '';
-        if(!(rank in users))
+        if(!(rank in users)) {
             users[rank] = [];
+        }
         users[rank].push(prefix + u);
     }
     this.statusOrder.forEach(function(r) {
-        if(!(r in users))
+        if(!(r in users)) {
             return;
+        }
         var ulist = users[r];
         // Case insensitive sort
         ulist.sort(function(a,b) { if(a.toLowerCase() > b.toLowerCase()) return 1; if(a.toLowerCase() < b.toLowerCase()) return -1; return 0;});
