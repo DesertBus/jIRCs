@@ -45,13 +45,27 @@ jIRCs.prototype.display = function(domobj) {
             e.preventDefault();
         }
     });
-    form.onsubmit = function() {
+    container.addEventListener("mousedown", function(e) {
+        disobj.mouse = {'x':e.screenX,'y':e.screenY};
+    });
+    container.addEventListener("mouseup", function(e) {
+        if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
+            input.focus();
+        }
+        var dx = disobj.mouse.x - e.screenX,
+            dy = disobj.mouse.y - e.screenY;
+        if(dx < 0) dx *= -1;
+        if(dy < 0) dy *= -1;
+        if(dx < 5 && dy < 5 && e.button == 0) //Make sure text selection works as expected 
+            input.focus();
+    });
+    form.addEventListener("submit", function(e) {
         self.handleLine(input.value, disobj);
         input.value = '';
-        return false;
-    };
+        e.preventDefault();
+    });
     input.type = 'text';
-    input.onkeydown = function(e) {
+    input.addEventListener("keydown", function(e) {
         var keyCode = e.keyCode || e.which; 
         if(keyCode == 9) {
             // Get cursor position
@@ -60,7 +74,7 @@ jIRCs.prototype.display = function(domobj) {
                 var r = document.selection.createRange().duplicate()
                 r.moveEnd('character', e.target.value.length)
                 if (r.text == '')
-                    return e.target.value.length
+                    cursor = e.target.value.length
                 cursor = e.target.value.lastIndexOf(r.text)
             } else {
                 cursor = e.target.selectionStart
@@ -84,12 +98,8 @@ jIRCs.prototype.display = function(domobj) {
             e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
             e.preventDefault();
         }
-    };
+    });
     form.appendChild(input);
-    //give focus to input box whenever chat is clicked
-    container.onclick = function() {
-        input.focus();
-    };
     tabbar.colSpan = 2;
     topic.colSpan = 2;
     formD.colSpan = 2;
@@ -120,15 +130,15 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     tab.className = "jircs_tab";
     tab.appendChild(document.createTextNode(channel));
     self = this;
-    tab.onclick = function() {
+    tab.addEventListener("click", function() {
         self.activateChan(channel, disobj);
-    };
+    });
     if (channel != "Status") {
         var closeBtn = document.createElement("span");
         closeBtn.appendChild(document.createTextNode("X"));
-        closeBtn.onclick = function() {
+        closeBtn.addEventListener("click", function() {
             self.destroyChan(channel);
-        };
+        });
         closeBtn.className = "jircs_tab_closeBtn";
         tab.appendChild(closeBtn);
     }
