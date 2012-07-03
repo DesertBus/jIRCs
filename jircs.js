@@ -33,6 +33,7 @@ function jIRCs(conn) {
     this.channels = {};
     this.statuses = {};
     this.statusOrder = [];
+    this.scrollbackSize = 500;
     this.nickname = '';
     this.conn = conn;
     this.conn.parent = this;

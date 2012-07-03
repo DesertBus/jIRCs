@@ -249,6 +249,9 @@ jIRCs.prototype.renderLine = function(channel, speaker, message) {
             var r = row.cloneNode(true);
             r.innerHTML = r.innerHTML.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
             disobj.channels[channel].table.appendChild(r);
+            while(disobj.channels[channel].table.children.length > this.scrollbackSize) {
+                disobj.channels[channel].table.removeChild(disobj.channels[channel].table.firstChild);
+            }
             if(b) disobj.chatWindow.scrollTop = disobj.chatWindow.scrollHeight - disobj.chatWindow.clientHeight; // Only scroll when user is at the bottom
             if (open.indexOf(channel) == -1) {
                 if(disobj.channels[channel].tab.className.indexOf("jircs_tab_attention") == -1)
