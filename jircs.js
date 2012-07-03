@@ -26,24 +26,6 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-if ( !Object.prototype.forEach ) {
-    Object.prototype.forEach = function(fn, scope) {
-        for(var k in this) {
-            if(this.hasOwnProperty(k)) {
-                fn.call(scope || this, this[k], k, this); // fn(value, key, object)
-            }
-        }
-    };
-}
-
-if ( !Array.prototype.forEach ) {
-    Array.prototype.forEach = function(fn, scope) {
-        for(var i = 0, len = this.length; i < len; ++i) {
-            fn.call(scope || this, this[i], i, this);
-        }
-    };
-}
-
 /* Public interface */
 function jIRCs(conn) {
     this.buf = '';
@@ -73,7 +55,7 @@ jIRCs.prototype.nick = function(nick) {
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
     this.renderLine('','','Connected to server.');
-    this.queue.forEach(this.send, this);
+    this.forEach(this.queue, this.send, this);
     this.queue = [];
 };
 
@@ -86,7 +68,7 @@ jIRCs.prototype.onmessage = function(evt) {
     this.buf += evt.data;
     var lines = this.buf.split("\n");
     this.buf = lines.pop();
-    lines.forEach(this.parseMessage, this);
+    this.forEach(lines, this.parseMessage, this);
 };
 
 jIRCs.prototype.send = function(command, args) {

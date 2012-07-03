@@ -93,7 +93,7 @@ jIRCs.prototype.display = function(domobj) {
             var name = e.target.value.substring(begin,end);
             var possible = [];
             // Complete the name
-            self.channels[disobj.window].names.forEach(function(status, n) {
+            this.forEach(self.channels[disobj.window].names, function(status, n) {
                 if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
                     possible.push(n);
                 }
@@ -176,7 +176,7 @@ jIRCs.prototype.destroyChan = function(channel) {
         //part channel
         this.send("PART",[channel]);
         //Iterate through displays
-        this.displays.forEach(function(disobj) {
+        this.forEach(this.displays, function(disobj) {
             //remove from DOM
             disobj.tabBar.removeChild(disobj.channels[channel].tab);
             disobj.chatWindow.removeChild(disobj.channels[channel].table);
@@ -198,8 +198,8 @@ jIRCs.prototype.destroyChan = function(channel) {
 
 jIRCs.prototype.activateChan = function(channel, disobj) {
     if (disobj.channels[channel] && disobj.window != channel) {
-        this.displays.forEach(function(idisobj) {
-            idisobj.channels.forEach(function(c, chan) {
+        this.forEach(this.displays, function(idisobj) {
+            this.forEach(idisobj.channels, function(c, chan) {
                 var newClass = 'jircs_tab';
                 if(idisobj == disobj) {
                     disobj.channels[chan].table.style.display = "none";
@@ -263,14 +263,14 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         }
         // Track open channels
         var open = [];
-        this.displays.forEach(function(d) {
+        this.forEach(this.displays, function(d) {
             open.push(d.window);
         }, this);
         var displays = this.displays;
         if(disobj) {
             displays = [disobj];
         }
-        displays.forEach(function(disobj) {
+        this.forEach(displays, function(disobj) {
             if (!disobj.channels[channel]) {
                 this.initChan(channel, disobj);
             }
@@ -330,7 +330,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
     disobj.userlistD.style.width = '0px';
     var users = {};
     var prefix = '', rank = '';
-    this.channels[disobj.window].names.forEach(function(prefix, u) {
+    this.forEach(this.channels[disobj.window].names, function(prefix, u) {
         if(prefix.length) {
             prefix = prefix.charAt(0);
         }
@@ -340,7 +340,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
         }
         users[rank].push(prefix + u);
     }, this);
-    this.statusOrder.forEach(function(r) {
+    this.forEach(this.statusOrder, function(r) {
         if(!(r in users)) {
             return;
         }
@@ -348,7 +348,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
         // Case insensitive sort
         ulist.sort(function(a,b) { if(a.toLowerCase() > b.toLowerCase()) return 1; if(a.toLowerCase() < b.toLowerCase()) return -1; return 0;});
         console.log(ulist);
-        ulist.forEach(function(u) {
+        this.forEach(ulist, function(u) {
             var p = document.createElement('p');
             p.appendChild(document.createTextNode(u));
             p.className = 'jircs_userlist_user';

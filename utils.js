@@ -67,3 +67,19 @@ jIRCs.prototype.zip = function(keys, values) {
     }
     return r;
 };
+
+jIRCs.prototype.forEach = function(object, fn, scope) {
+    if(object.forEach) {
+        object.forEach(fn, scope);
+    } else if(object.length) {
+        for(var i = 0, len = object.length; i < len; ++i) {
+            fn.call(scope || object, object[i], i, object);
+        }
+    } else {
+        for(var k in object) {
+            if(object.hasOwnProperty(k)) {
+                fn.call(scope || object, object[k], k, object);
+            }
+        }
+    }
+};
