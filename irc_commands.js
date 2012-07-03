@@ -15,6 +15,9 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
             delete(this.channels[channel].names[oldNick]);
         }
     }
+    this.displays.forEach(function(disobj) {
+        this.renderUserlist(disobj);
+    }, this);
 };
 
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 

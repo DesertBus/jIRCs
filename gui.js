@@ -149,6 +149,19 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     }
     disobj.tabBar.appendChild(tab);
     table.style.display = "none"; //hide new channel
+    // Insert empty row for style purposes
+    var row = document.createElement('tr');
+    var date = document.createElement('td');
+    var user = document.createElement('td');
+    var text = document.createElement('td');
+    row.className = "jircs_chatRow";
+    date.className = "jircs_chatDate";
+    user.className = "jircs_chatUser";
+    text.className = "jircs_chatText";
+    row.appendChild(date);
+    row.appendChild(user);
+    row.appendChild(text);
+    table.appendChild(row);
     disobj.chatWindow.appendChild(table);
     disobj.channels[channel] = {'table': table, 'tab': tab};
 };
@@ -290,10 +303,11 @@ jIRCs.prototype.renderTopic = function(disobj) {
 };
 
 jIRCs.prototype.renderUserlist = function(disobj) {
-    disobj.userlist.innerHTML = "";
-    disobj.userlistD.style.width = '0px';
     if(!(disobj.window in this.channels))
         return;
+    disobj.userlist.innerHTML = "";
+    disobj.userlistD.style.width = '0px';
+    disobj.channels[disobj.window].table.style.display = 'none';
     var users = {};
     var prefix = '', rank = '';
     for(var u in this.channels[disobj.window].names) {
@@ -319,12 +333,13 @@ jIRCs.prototype.renderUserlist = function(disobj) {
         }, this);
     }, this);
     disobj.userlistD.style.width = (disobj.userlist.scrollWidth + 20) + 'px';
+    disobj.channels[disobj.window].table.style.width = (disobj.chatWindow.clientWidth - 40) + 'px';
+    disobj.channels[disobj.window].table.style.display = 'table';
     disobj.userlist.scrollTop = 0;
 };
 
 jIRCs.prototype.fixHeights = function(disobj) {
     disobj.chatWindow.style.height = disobj.userlist.style.height = '0px';
     var h = (disobj.height - disobj.container.offsetHeight) + 'px';
-    console.log(h);
     disobj.chatWindow.style.height = disobj.userlist.style.height = h;
 };
