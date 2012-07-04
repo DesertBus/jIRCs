@@ -36,6 +36,7 @@ function jIRCs(conn) {
     this.statusOrder = [];
     this.scrollbackSize = 500;
     this.nickname = '';
+    this.registered = false;
     this.conn = conn;
     this.conn.parent = this;
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
@@ -47,6 +48,7 @@ jIRCs.prototype.version = 'jIRCs 0.1';
 
 jIRCs.prototype.nick = function(nick) {
     this.nickname = nick;
+    this.send('CAP',['LS']);
     this.send('USER',[nick,nick,nick,':'+nick]);
     this.send('NICK',[nick]);
 };
