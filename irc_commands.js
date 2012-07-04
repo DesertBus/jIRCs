@@ -110,6 +110,24 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     }, this);
 };
 
+jIRCs.prototype.irc_CAP = function(prefix, args) {
+    // :server CAP dest subcommand :capability list
+    if (args[1] == "LS") {
+        var supportedCaps = args[2].substr(1).split(' ');
+        if (supportedCaps.indexOf("multi-prefix") != -1) {
+            this.send("CAP", ["REQ", ":multi-prefix"]);
+        } else if (!this.registered) {
+            this.send("CAP", ["END"]);
+        }
+    } else if (args[1] == "ACK" && !this.registered) {
+        this.send("CAP", ["END"]);
+    }
+}
+
+jIRCs.prototype.irc_001 = function(prefix, args) {
+    this.registered = true;
+}
+
 jIRCs.prototype.irc_005 = function(prefix, args) {
     var server = args.shift();
     var message = args.pop().substr(1);
