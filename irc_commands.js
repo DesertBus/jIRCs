@@ -115,9 +115,9 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_MODE = function(prefix, args) {
-    var channel = args.shift();
+    var channel = args.shift().toLowerCase();
     var modes = args.shift().split('');
-    if (channel == this.nickname) { // handle user modes here
+    if (channel == this.nickname.toLowerCase()) { // handle user modes here
         var adding = true;
         this.forEach(modes, function(mode) {
             switch (mode) {
@@ -189,7 +189,7 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
 
 jIRCs.prototype.irc_324 = function(prefix, args) {
     args.shift(); // discard our nick; it's not useful
-    var channel = args.shift();
+    var channel = args.shift().toLowerCase();
     var modes = args.shift().split('');
     // At this point, what's left in args (if anything) is the mode parameter list
     this.channels[channel].modes = {}; // Reset the channel modes list as 324 is all of the channel's current modes
