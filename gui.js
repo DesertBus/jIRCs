@@ -182,15 +182,17 @@ jIRCs.prototype.destroyChan = function(channel) {
             disobj.chatWindow.removeChild(disobj.channels[channel].table);
             //destroy
             delete(disobj.channels[channel]);
-            //pick a channel to activate
-            var newchan = disobj.windowHistory.pop();
-            while (newchan && !disobj.channels[newchan]) {
-                newchan = disobj.windowHistory.pop() || false;
+            if(channel == disobj.window) {
+                //pick a channel to activate
+                var newchan = disobj.windowHistory.pop();
+                while (newchan && !disobj.channels[newchan]) {
+                    newchan = disobj.windowHistory.pop() || false;
+                }
+                if(!newchan) {
+                    newchan = 'Status';
+                }
+                this.activateChan(newchan, disobj);
             }
-            if(!newchan) {
-                newchan = 'Status';
-            }
-            this.activateChan(newchan, disobj);
         }, this);
         delete(this.channels[channel]);
     }   

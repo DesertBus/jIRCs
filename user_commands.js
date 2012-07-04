@@ -21,3 +21,8 @@ jIRCs.prototype.command_MSG = function(args) {
     var target = args.shift();
     this.say(args.join(' '), target);
 };
+
+jIRCs.prototype.command_PART = function(args) {
+    var channel = args.shift().toLowerCase();
+    this.destroyChan(channel);
+};
