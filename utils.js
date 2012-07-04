@@ -58,6 +58,92 @@ jIRCs.prototype.parseMessage = function(s) {
     }
 };
 
+jIRCs.prototype.parseModes = function(channel, modes, params) {
+    var adding = true; // if + or - is not given first, adding is assumed.
+    // The server should send the initial +/- anyway, but I also have to
+    // initialize this to something, so may as well do it right.
+    this.forEach(modes, function(mode) {
+        switch (mode) {
+            case '+':
+                adding = true;
+                break;
+            case '-':
+                adding = false;
+                break;
+            default:
+                if (this.statusOrder.indexOf(mode) != -1) {
+                    var user = args.shift();
+                    if (adding) {
+                        this.channels[channel].names[name] = addPrefix(this.channels[channel].names[name], mode);
+                    } else {
+                        var symbol = '';
+                        this.forEach(this.statuses, function(value, key) {
+                            if (value == mode) {
+                                symbol = key;
+                            }
+                        }, this);
+                        var symPos = this.channels[channel].names[name].indexOf(symbol);
+                        if (symPos != -1) {
+                            this.channels[channel].names[name].splice(symPos, 1);
+                        }
+                    }
+                } else {
+                    var modeType = this.chanModes[mode];
+                    // skip mode 0 because it's not worth the hassle to keep list modes in sync
+                    if (modeType == 1) {
+                        var param = params.shift(); // type 1 takes a parameter on both set and unset
+                        if (adding) {
+                            this.channels[channel].modes[mode] = param;
+                        } else {
+                            delete(this.channels[channel].modes[mode]);
+                        }
+                    } else if (modeType == 2) { // type 2 takes a parameter only on set
+                        if (adding) {
+                            this.channels[channel].modes[mode] = params.shift();
+                        } else {
+                            delete(this.channels[channel].modes[mode]);
+                        }
+                    } else if (modeType == 3) { // type 3 takes no parameters
+                        if (adding) {
+                            this.channels[channel].modes[mode] = '';
+                        } else {
+                            delete(this.channels[channel].modes[mode]);
+                        }
+                    }
+                }
+        }
+    }, this);
+};
+
+jIRCs.prototype.addPrefix(prefixStr, newMode) {
+    var symbol = '';
+    this.forEach(this.statuses, function(value, key) {
+        if (newMode == value) {
+            symbol = key;
+        }
+    }, this);
+    var afterSymbol = [];
+    var reachedThis = false;
+    this.forEach(this.statusOrder, function(mode) {
+        if (mode == newMode) {
+            reachedThis = true;
+        } else if (reachedThis) {
+            afterSymbol.push(mode);
+        }
+    }, this);
+    var prefixA = prefixStr.split('');
+    var added = false;
+    this.forEach(prefixA, function(status, loc) {
+        if (status == symbol) {
+            added = true;
+        } else if (!added && afterSymbol.indexOf(this.statuses[status]) != -1) {
+            prefixA.splice(loc, 0, symbol);
+            added = true;
+        }
+    }, this);
+    return prefixA.join('');
+};
+
 jIRCs.prototype.getNick = function(prefix) { return prefix.split('!')[0]; };
 
 jIRCs.prototype.zip = function(keys, values) {
