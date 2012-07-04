@@ -170,7 +170,7 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
             var modes = arg.substr(8).split(')'); // exclude the open paren, split close paren
             var symbols = modes[1].split('');
             var letters = modes[0].split('');
-            this.statuses = this.zip(symbols, letters);
+            this.statuses = this.zip(symbols.concat(letters), letters.concat(symbols));
             this.statusOrder = letters;
             this.statuses[''] = '';
             this.statusOrder.push('');

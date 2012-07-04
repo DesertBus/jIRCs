@@ -72,21 +72,30 @@ jIRCs.prototype.parseModes = function(channel, modes, params) {
                 break;
             default:
                 if (this.statusOrder.indexOf(mode) != -1) {
-                    var user = args.shift();
+                    var user = params.shift();
                     if (adding) {
-                        this.channels[channel].names[name] = addPrefix(this.channels[channel].names[name], mode);
-                    } else {
-                        var symbol = '';
-                        this.forEach(this.statuses, function(value, key) {
-                            if (value == mode) {
-                                symbol = key;
+                        var oldPrefix = this.channels[channel].names[user] + this.statuses[mode];
+                        var newPrefix = '';
+                        this.forEach(this.statusOrder, function(m) {
+                            if (oldPrefix.indexOf(this.statuses[m]) != -1) {
+                                newPrefix += this.statuses[m];
                             }
                         }, this);
-                        var symPos = this.channels[channel].names[name].indexOf(symbol);
+                        this.channels[channel].names[user] = newPrefix;
+                    } else {
+                        var symbol = this.statuses[mode];
+                        var symPos = this.channels[channel].names[user].indexOf(symbol);
                         if (symPos != -1) {
-                            this.channels[channel].names[name].splice(symPos, 1);
+                            var symarr = this.channels[channel].names[user].split('');
+                            symarr.splice(symPos, 1);
+                            this.channels[channel].names[user] = symarr.join('');
                         }
                     }
+                    this.forEach(this.displays, function(disobj) {
+                        if(disobj.window == channel) {
+                            this.renderUserlist(disobj);
+                        }
+                    }, this);
                 } else {
                     var modeType = this.chanModes[mode];
                     // skip mode 0 because it's not worth the hassle to keep list modes in sync
@@ -113,35 +122,6 @@ jIRCs.prototype.parseModes = function(channel, modes, params) {
                 }
         }
     }, this);
-};
-
-jIRCs.prototype.addPrefix(prefixStr, newMode) {
-    var symbol = '';
-    this.forEach(this.statuses, function(value, key) {
-        if (newMode == value) {
-            symbol = key;
-        }
-    }, this);
-    var afterSymbol = [];
-    var reachedThis = false;
-    this.forEach(this.statusOrder, function(mode) {
-        if (mode == newMode) {
-            reachedThis = true;
-        } else if (reachedThis) {
-            afterSymbol.push(mode);
-        }
-    }, this);
-    var prefixA = prefixStr.split('');
-    var added = false;
-    this.forEach(prefixA, function(status, loc) {
-        if (status == symbol) {
-            added = true;
-        } else if (!added && afterSymbol.indexOf(this.statuses[status]) != -1) {
-            prefixA.splice(loc, 0, symbol);
-            added = true;
-        }
-    }, this);
-    return prefixA.join('');
 };
 
 jIRCs.prototype.getNick = function(prefix) { return prefix.split('!')[0]; };
