@@ -34,6 +34,8 @@ function jIRCs(conn) {
     this.channels = {};
     this.statuses = {};
     this.statusOrder = [];
+    this.chanModes = {};
+    this.userModes = [];
     this.scrollbackSize = 500;
     this.nickname = '';
     this.registered = false;

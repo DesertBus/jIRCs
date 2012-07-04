@@ -31,6 +31,10 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
         this.channels[channel].names = {};
     }
     this.channels[channel].names[prefix] = "";
+    if (!this.channels[channel].modes) {
+        this.channels[channel].modes = {};
+        this.send('MODE', [channel]); // Get the initial modes because the server doesn't send them by default
+    }
     this.forEach(this.displays, function(disobj) {
         if(document.activeElement == disobj.messagebox && prefix == this.nickname) {
             this.activateChan(channel, disobj);
@@ -110,6 +114,36 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     }, this);
 };
 
+jIRCs.prototype.irc_MODE = function(prefix, args) {
+    var channel = args.shift();
+    var modes = args.shift().split('');
+    if (channel == this.nickname) { // handle user modes here
+        var adding = true;
+        this.forEach(modes, function(mode) {
+            switch (mode) {
+                case '+':
+                    adding = true;
+                    break;
+                case '-':
+                    adding = false;
+                    break;
+                default:
+                    if (adding) {
+                        this.userModes.push(mode);
+                    } else {
+                        var modePos = this.userModes.indexOf(mode);
+                        if (modePos != -1) {
+                            this.userModes.splice(modePos, 1);
+                        }
+                    }
+            }
+        }, this);
+    } else {
+        // At this point, what's left in args is the parameter list
+        this.parseModes(channel, modes, args); // handle the channel modes
+    }
+};
+
 jIRCs.prototype.irc_CAP = function(prefix, args) {
     // :server CAP dest subcommand :capability list
     if (args[1] == "LS") {
@@ -141,7 +175,25 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
             this.statuses[''] = '';
             this.statusOrder.push('');
         }
+        if (arg.substr(0, 10) == 'CHANMODES=') {
+            var modes = arg.substr(10); // get all the channel modes
+            var groups = modes.split(',');
+            this.forEach(groups, function(group, groupNum) {
+                this.forEach(group, function(mode) {
+                    this.chanModes[mode] = groupNum; // map modes to their group index for easy lookup
+                }, this);
+            }, this);
+        }
     }, this);
+};
+
+jIRCs.prototype.irc_324 = function(prefix, args) {
+    args.shift(); // discard our nick; it's not useful
+    var channel = args.shift();
+    var modes = args.shift().split('');
+    // At this point, what's left in args (if anything) is the mode parameter list
+    this.channels[channel].modes = {}; // Reset the channel modes list as 324 is all of the channel's current modes
+    this.parseModes(channel, modes, args);
 };
 
 jIRCs.prototype.irc_353 = function(prefix, args) {
