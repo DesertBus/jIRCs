@@ -100,7 +100,7 @@
 .jircs_bold {
     font-weight: bold;
 }
-.jircs_italic, .jircs_reverse {
+.jircs_italic {
     font-style: italic;
 }
 .jircs_underline {
