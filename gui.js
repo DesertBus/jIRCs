@@ -93,7 +93,7 @@ jIRCs.prototype.display = function(domobj) {
             var name = e.target.value.substring(begin,end);
             var possible = [];
             // Complete the name
-            this.forEach(self.channels[disobj.window].names, function(status, n) {
+            self.forEach(self.channels[disobj.window].names, function(status, n) {
                 if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
                     possible.push(n);
                 }
