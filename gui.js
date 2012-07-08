@@ -324,7 +324,14 @@ jIRCs.prototype.formatLine = function(line) {
             var swap = color.foreground;
             color.foreground = color.background;
             color.background = swap;
-            rebuild = true;
+            if(color.set) {
+                l += '<span>';
+                depth += 1;
+            } else {
+                l += '<span><span>';
+                depth += 2;
+            }
+            color.set = rebuild = true;
         } else if(c == '\u001D') { // Italic
             if(italic) {
                 rebuild = true;
@@ -397,7 +404,7 @@ jIRCs.prototype.formatLine = function(line) {
         } else if(c == '\u000F') {
             l += this.repeat('</span>', depth);
             depth = 0;
-            bold = italic = underline = color.foreground = color.background = false;
+            bold = italic = underline = color.foreground = color.background = color.set = false;
         } else {
             l += c;
         }
