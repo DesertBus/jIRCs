@@ -301,7 +301,6 @@ jIRCs.prototype.formatLine = function(line) {
     var l = '';
     var bold = false;
     var italic = false;
-    var reverse = false;
     var underline = false;
     var color = { foreground: false, background: false, tmp: '', state: 0, set: false };
     this.forEach(line, function(c) {
@@ -316,13 +315,16 @@ jIRCs.prototype.formatLine = function(line) {
             }
             bold = !bold;
         } else if(c == '\u0016') { // Reverse
-            if(reverse) {
-                rebuild = true;
-            } else {
-                l += '<span class="jircs_reverse">';
-                depth += 1;
+            if (!color.foreground) {
+                color.foreground = '1'; // The default foreground color is 1
             }
-            reverse = !reverse;
+            if (!color.background) {
+                color.background = '0'; // The default background color is 0
+            }
+            var swap = color.foreground;
+            color.foreground = color.background;
+            color.background = swap;
+            rebuild = true;
         } else if(c == '\u001D') { // Italic
             if(italic) {
                 rebuild = true;
@@ -395,7 +397,7 @@ jIRCs.prototype.formatLine = function(line) {
         } else if(c == '\u000F') {
             l += this.repeat('</span>', depth);
             depth = 0;
-            bold = reverse = italic = underline = color.foreground = color.background = false;
+            bold = italic = underline = color.foreground = color.background = false;
         } else {
             l += c;
         }
@@ -404,9 +406,6 @@ jIRCs.prototype.formatLine = function(line) {
             depth -= 1;
             if(bold) {
                 l += '<span class="jircs_bold">';
-            }
-            if(reverse) {
-                l += '<span class="jircs_reverse">';
             }
             if(italic) {
                 l += '<span class="jircs_italic">';
