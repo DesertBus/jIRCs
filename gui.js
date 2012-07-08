@@ -259,7 +259,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             row.className += " jircs_hilight";
         }
         row.appendChild(text);
-        text.innerHTML = text.innerHTML.replace(this.url_regex, this.linkMunger); // Auto-linkify links
+        text.innerHTML = this.formatLine(text.innerHTML);
         if(!(channel in this.channels)) {
             this.channels[channel] = {} // Add a new object in which we can store channel data
         }
@@ -278,7 +278,6 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             }
             var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight <= disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight + 5); // 5px buffer just in case
             var r = row.cloneNode(true);
-            r.innerHTML = r.innerHTML.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
             disobj.channels[channel].table.appendChild(r);
             while(disobj.channels[channel].table.children.length > this.scrollbackSize) {
                 disobj.channels[channel].table.removeChild(disobj.channels[channel].table.firstChild);
@@ -297,6 +296,142 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         }, this);
 };
 
+jIRCs.prototype.formatLine = function(line) {
+    var depth = 0;
+    var l = '';
+    var bold = false;
+    var italic = false;
+    var reverse = false;
+    var underline = false;
+    var color = { foreground: false, background: false, tmp: '', state: 0, set: false };
+    this.forEach(line, function(c) {
+        var rebuild = false;
+        var defer = false;
+        if(c == '\u0002') { // Bold
+            if(bold) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_bold">';
+                depth += 1;
+            }
+            bold = !bold;
+        } else if(c == '\u0016') { // Reverse
+            if(reverse) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_reverse">';
+                depth += 1;
+            }
+            reverse = !reverse;
+        } else if(c == '\u001D') { // Italic
+            if(italic) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_italic">';
+                depth += 1;
+            }
+            italic = !italic;
+        } else if(c == '\u001F') { // Underline
+            if(underline) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_underline">';
+                depth += 1;
+            }
+            underline = !underline;
+        } else if(c == '\u0003') { // Color
+            color.state = 1;
+        } else if(color.state == 1) {
+            if(isNaN(parseInt(c))) {
+                color.state = 0
+                color.foreground = color.background = color.set = false;
+                defer = rebuild = true;
+            } else {
+                color.tmp += c;
+                color.state = 2;
+            }
+        } else if(color.state == 2) {
+            if(isNaN(parseInt(c))) {
+                color.foreground = color.tmp;
+                color.tmp = '';
+                if(c == ',') {
+                    color.state = 3;
+                } else {
+                    color.state = 0;
+                    defer = true;
+                    depth += 1;
+                    if(color.set) {
+                        // Rebuild colors hack
+                        l += '<span>';
+                        rebuild = true;
+                    } else {
+                        color.set = true;
+                        l += '<span class="jircs_color_foreground_' + parseInt(color.foreground) + '">';
+                    }
+                }
+            } else {
+                color.tmp += c;
+            }
+        } else if(color.state == 3) {
+            if(isNaN(parseInt(c))) {
+                if(color.tmp) {
+                    color.background = color.tmp;
+                }
+                color.tmp = '';
+                color.state = 0;
+                defer = true;
+                depth += 1;
+                if(color.set) {
+                    // Rebuild colors hack
+                    l += '<span>';
+                    rebuild = true;
+                } else {
+                    color.set = true;
+                    l += '<span class="jircs_color_foreground_' + parseInt(color.foreground) + ' jircs_color_background_' + parseInt(color.background) + '">';
+                }
+            } else {
+                color.tmp += c;
+            }
+        } else if(c == '\u000F') {
+            l += this.repeat('</span>', depth);
+            depth = 0;
+            bold = reverse = italic = underline = color.foreground = color.background = false;
+        } else {
+            l += c;
+        }
+        if(rebuild) {
+            l += this.repeat('</span>', depth);
+            depth -= 1;
+            if(bold) {
+                l += '<span class="jircs_bold">';
+            }
+            if(reverse) {
+                l += '<span class="jircs_reverse">';
+            }
+            if(italic) {
+                l += '<span class="jircs_italic">';
+            }
+            if(underline) {
+                l += '<span class="jircs_underline">';
+            }
+            if(color.foreground) {
+                l += '<span class="jircs_color_foreground_' + parseInt(color.foreground);
+                if(color.background) {
+                    l += ' jircs_color_background_' + parseInt(color.background);
+                }
+                l += '">';
+            }
+        }
+        if(defer) {
+            l += c;
+        }
+    }, this);
+    l += this.repeat('</span>', depth);
+    l = l.replace(this.url_regex, this.linkMunger); // Auto-linkify links
+    l = l.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
+    return l;
+};
+
 jIRCs.prototype.renderTopic = function(disobj) {
     disobj.topic.innerHTML = "";
     if(!(disobj.window in this.channels && this.channels[disobj.window].topic)) {
@@ -306,6 +441,7 @@ jIRCs.prototype.renderTopic = function(disobj) {
     var tmsg = document.createElement('p');
     tmsg.appendChild(document.createTextNode(this.channels[disobj.window].topic.message));
     tmsg.className = 'jircs_topic_message';
+    tmsg.innerHTML = this.formatLine(tmsg.innerHTML);
     disobj.topic.appendChild(tmsg);
     if(this.channels[disobj.window].topic.creator) {
         var tcreator = document.createElement('p');

@@ -96,3 +96,109 @@
 .jircs_tab_closeBtn:hover {
     background-color: Red;
 }
+/* Text formatting */
+.jircs_bold {
+    font-weight: bold;
+}
+.jircs_italic, .jircs_reverse {
+    font-style: italic;
+}
+.jircs_underline {
+    text-decoration: underline;
+}
+.jircs_color_foreground_0, .jircs_color_foreground_16 {
+    color: #FFFFFF;
+}
+.jircs_color_foreground_1 {
+    color: #000000;
+}
+.jircs_color_foreground_2 {
+    color: #000080;
+}
+.jircs_color_foreground_3 {
+    color: #008000;
+}
+.jircs_color_foreground_4 {
+    color: #FF0000;
+}
+.jircs_color_foreground_5 {
+    color: #804040;
+}
+.jircs_color_foreground_6 {
+    color: #8000FF;
+}
+.jircs_color_foreground_7 {
+    color: #808000;
+}
+.jircs_color_foreground_8 {
+    color: #FFFF00;
+}
+.jircs_color_foreground_9 {
+    color: #00FF00;
+}
+.jircs_color_foreground_10 {
+    color: #008080;
+}
+.jircs_color_foreground_11 {
+    color: #00FFFF;
+}
+.jircs_color_foreground_12 {
+    color: #0000FF;
+}
+.jircs_color_foreground_13 {
+    color: #FF00FF;
+}
+.jircs_color_foreground_14 {
+    color: #808080;
+}
+.jircs_color_foreground_15 {
+    color: #C0C0C0;
+}
+.jircs_color_background_0, .jircs_color_background_16 {
+    background-color: #FFFFFF;
+}
+.jircs_color_background_1 {
+    background-color: #000000;
+}
+.jircs_color_background_2 {
+    background-color: #000080;
+}
+.jircs_color_background_3 {
+    background-color: #008000;
+}
+.jircs_color_background_4 {
+    background-color: #FF0000;
+}
+.jircs_color_background_5 {
+    background-color: #804040;
+}
+.jircs_color_background_6 {
+    background-color: #8000FF;
+}
+.jircs_color_background_7 {
+    background-color: #808000;
+}
+.jircs_color_background_8 {
+    background-color: #FFFF00;
+}
+.jircs_color_background_9 {
+    background-color: #00FF00;
+}
+.jircs_color_background_10 {
+    background-color: #008080;
+}
+.jircs_color_background_11 {
+    background-color: #00FFFF;
+}
+.jircs_color_background_12 {
+    background-color: #0000FF;
+}
+.jircs_color_background_13 {
+    background-color: #FF00FF;
+}
+.jircs_color_background_14 {
+    background-color: #808080;
+}
+.jircs_color_background_15 {
+    background-color: #C0C0C0;
+}
