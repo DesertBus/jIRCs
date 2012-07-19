@@ -87,6 +87,9 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     if (channel == this.nickname.toLowerCase()) {
         channel = prefix.toLowerCase();
     }
+    if (channel.charAt(0) in this.statuses) {
+        channel = channel.substr(1); // trim the status char off so the message gets displayed to the correct channel
+    }
     if(message.charAt(0) == '\u0001') {
         message = message.split('\u0001')[1];
         if(message.substr(0,6).toUpperCase() == 'ACTION') {
