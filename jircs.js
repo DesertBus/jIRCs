@@ -32,6 +32,7 @@ function jIRCs(conn) {
     this.queue = [];
     this.displays = [];
     this.channels = {};
+    this.chantypes = [];
     this.statuses = {};
     this.statusOrder = [];
     this.chanModes = {};

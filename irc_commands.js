@@ -88,6 +88,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
         channel = prefix.toLowerCase();
     }
     if (channel.charAt(0) in this.statuses) {
+        prefix += ":" + channel; // give a visible indication that the message isn't for the whole channel
         channel = channel.substr(1); // trim the status char off so the message gets displayed to the correct channel
     }
     if(message.charAt(0) == '\u0001') {
@@ -110,11 +111,21 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_NOTICE = function(prefix, args) {
-    var nick = '\u2013 ' + this.getNick(prefix) + ' \u2013'; // \u2013 is an en-dash
+    var nick = '\u2013 ' + this.getNick(prefix);
     var message = args.pop().substr(1);
-    this.forEach(this.displays, function(disobj) {
-        this.renderLine(disobj.window, nick, message, disobj);
-    }, this);
+    var dest = args.shift().toLowerCase(); // It'll only be used if it's a channel name, anyway
+    if (dest.charAt(0) in this.chantypes || dest.charAt(1) in this.chantypes) { // There may or may not be a channel status in the parameter
+        nick += ":" + dest + ' \u2013'; // Give a visible indication that the message is a channel notice
+        if (dest.charAt(0) in this.statuses) { // it's not going directly to all of a channel
+            dest = dest.substr(1); // display it in the correct window
+        }
+        this.renderLine(dest, nick, message);
+    } else {
+        nick += ' \u2013'; // \u2013 is an en-dash
+        this.forEach(this.displays, function(disobj) {
+            this.renderLine(disobj.window, nick, message, disobj);
+        }, this);
+    }
 };
 
 jIRCs.prototype.irc_MODE = function(prefix, args) {
@@ -186,6 +197,9 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
                     this.chanModes[mode] = groupNum; // map modes to their group index for easy lookup
                 }, this);
             }, this);
+        }
+        if (arg.substr(0, 10) == 'CHANTYPES=') {
+            this.chantypes = arg.substr(10).split('');
         }
     }, this);
 };
