@@ -114,7 +114,7 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     var nick = '\u2013 ' + this.getNick(prefix);
     var message = args.pop().substr(1);
     var dest = args.shift().toLowerCase(); // It'll only be used if it's a channel name, anyway
-    if (dest.charAt(0) in this.chantypes || dest.charAt(1) in this.chantypes) { // There may or may not be a channel status in the parameter
+    if (this.chantypes.indexOf(dest.charAt(0)) !== -1 || this.chantypes.indexOf(dest.charAt(1)) !== -1) { // There may or may not be a channel status in the parameter
         nick += ":" + dest + ' \u2013'; // Give a visible indication that the message is a channel notice
         if (dest.charAt(0) in this.statuses) { // it's not going directly to all of a channel
             dest = dest.substr(1); // display it in the correct window
