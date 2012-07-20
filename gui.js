@@ -276,7 +276,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             if (!disobj.channels[channel]) {
                 this.initChan(channel, disobj);
             }
-            var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight <= disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight + 5); // 5px buffer just in case
+            var b = (disobj.chatWindow.scrollHeight < disobj.chatWindow.clientHeight || disobj.chatWindow.scrollHeight <= disobj.chatWindow.scrollTop + disobj.chatWindow.clientHeight + 50); // 50px buffer just in case
             var r = row.cloneNode(true);
             disobj.channels[channel].table.appendChild(r);
             while(disobj.channels[channel].table.children.length > this.scrollbackSize) {
