@@ -100,7 +100,6 @@ jIRCs.prototype.say = function(message, location) {
     if(!location) {
         location = this.nickname;
     }
-    var args = [location, ':' + message];
-    this.send('PRIVMSG', args);
-    this.irc_PRIVMSG(this.nickname, args);
+    this.send('PRIVMSG', [location, ':' + message]);
+    this.irc_PRIVMSG(this.nickname, [location, message]);
 };
