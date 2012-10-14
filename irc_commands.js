@@ -4,7 +4,7 @@ jIRCs.prototype.irc_PING = function(prefix, args) {
 
 jIRCs.prototype.irc_NICK = function(prefix, args) {
     var oldNick = this.getNick(prefix),
-        newNick = args.pop().substr(1);
+        newNick = args.pop();
     if(oldNick == this.nickname) {
         this.nickname = newNick;
     }
@@ -21,7 +21,7 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
-    var channel = args.pop().substr(1).toLowerCase();
+    var channel = args.pop().toLowerCase();
     if(prefix != this.nickname) {
         this.renderLine(channel, '', prefix + " joined " + channel);
     } else {
@@ -61,7 +61,7 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_QUIT = function(prefix, args) { 
-    var reason = args.pop().substr(1);
+    var reason = args.pop();
     this.forEach(this.channels, function(c, channel) {
         if(channel == 'Status') {
             return;
@@ -82,7 +82,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
 
 jIRCs.prototype.irc_PRIVMSG = function(prefix, args) { 
     var channel = args.shift().toLowerCase();
-    var message = args.pop().substr(1);
+    var message = args.pop();
     //account for private messages
     if (channel == this.nickname.toLowerCase()) {
         channel = prefix.toLowerCase();
@@ -112,7 +112,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
 
 jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     var nick = '\u2013 ' + this.getNick(prefix);
-    var message = args.pop().substr(1);
+    var message = args.pop();
     var dest = args.shift().toLowerCase(); // It'll only be used if it's a channel name, anyway
     if (this.chantypes.indexOf(dest.charAt(0)) !== -1 || this.chantypes.indexOf(dest.charAt(1)) !== -1) { // There may or may not be a channel status in the parameter
         nick += ":" + dest + ' \u2013'; // Give a visible indication that the message is a channel notice
@@ -178,7 +178,7 @@ jIRCs.prototype.irc_001 = function(prefix, args) {
 
 jIRCs.prototype.irc_005 = function(prefix, args) {
     var server = args.shift();
-    var message = args.pop().substr(1);
+    var message = args.pop();
     this.forEach(args, function(arg) {
         if(arg.substr(0,7).toUpperCase() == 'PREFIX=') {
             var modes = arg.substr(8).split(')'); // exclude the open paren, split close paren

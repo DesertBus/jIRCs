@@ -45,7 +45,7 @@ jIRCs.prototype.parseMessage = function(s) {
     if(s.indexOf(' :') != -1) {
         var msg = s.split(' :');
         args = msg.shift().split(' ');
-        trailing = ':'+msg.join(' :');
+        trailing = msg.join(' :');
         args.push(trailing);
     } else {
         args = s.split(' ');
