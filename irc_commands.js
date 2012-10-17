@@ -46,11 +46,12 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_PART = function(prefix, args) { 
-    var channel = args.pop().toLowerCase();
+    var channel = args.shift().toLowerCase();
+    var reason = args.pop();
     if(this.getNick(prefix) == this.nickname) {
         this.destroyChan(channel);
     } else {
-        this.renderLine(channel, '', prefix + " left " + channel);
+        this.renderLine(channel, '', prefix + " left " + channel + " [" + reason + "]");
         delete(this.channels[channel].names[prefix]);
         this.forEach(this.displays, function(disobj) {
             if(disobj.window == channel) {
