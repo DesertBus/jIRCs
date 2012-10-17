@@ -178,7 +178,7 @@ jIRCs.prototype.measureText = function(text, classname) {
     div.style.width = "auto";
     div.innerText = text;
     document.body.appendChild(div);
-    r = {"height": div.clientHeight, "width": div.clientWidth};
+    r = {"height": div.clientHeight+1, "width": div.clientWidth+1};
     document.body.removeChild(div);
     console.log("===", text, classname, r["height"], r["width"]);
     return r;
