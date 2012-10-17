@@ -372,9 +372,6 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         text.className += " jircs_action";
     }
     var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
-    if(nickCheck.test(message)) { // Hilight
-        row.className += " jircs_hilight";
-    }
     text.innerHTML = this.formatLine(text.innerHTML);
     if(!(channel in this.channels)) {
         this.channels[channel] = {} // Add a new object in which we can store channel data
