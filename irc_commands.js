@@ -16,7 +16,7 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
         }
     }, this);
     this.forEach(this.displays, function(disobj) {
-        this.renderUserlist(disobj);
+        this.render(disobj);
     }, this);
 };
 
@@ -40,7 +40,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
             this.activateChan(channel, disobj);
         }
         if(disobj.window == channel) {
-            this.renderUserlist(disobj);
+            this.render(disobj);
         }
     }, this);
 };
@@ -54,7 +54,7 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
         delete(this.channels[channel].names[prefix]);
         this.forEach(this.displays, function(disobj) {
             if(disobj.window == channel) {
-                this.renderUserlist(disobj);
+                this.render(disobj);
             }
         }, this);
     }
@@ -75,7 +75,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
         // Let ondisconnect handle cleanup
     } else {
         this.forEach(this.displays, function(disobj) {
-            this.renderUserlist(disobj);
+            this.render(disobj);
         }, this);
     }
 };
@@ -106,7 +106,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
             }
         }
     } else {
-        this.renderLine(channel, prefix, message);
+        this.renderLine(channel, "<"+prefix+">", message);
     }
 };
 
@@ -161,7 +161,7 @@ jIRCs.prototype.irc_MODE = function(prefix, args) {
 jIRCs.prototype.irc_CAP = function(prefix, args) {
     // :server CAP dest subcommand :capability list
     if (args[1] == "LS") {
-        var supportedCaps = args[2].substr(1).split(' ');
+        var supportedCaps = args[2].split(' ');
         if (supportedCaps.indexOf("multi-prefix") != -1) {
             this.send("CAP", ["REQ", ":multi-prefix"]);
         } else if (!this.registered) {
@@ -219,7 +219,7 @@ jIRCs.prototype.irc_353 = function(prefix, args) {
         this.channels[channel].names = {};
         this.channels[channel].moreNames = true;
     }
-    var names = args[3].substr(1).split(' '); // Strip the colon and split the names out
+    var names = args[3].split(' '); // Strip the colon and split the names out
     this.forEach(names, function(name) {
         var statusList = '';
         while (name.charAt(0) in this.statuses) {
@@ -235,7 +235,7 @@ jIRCs.prototype.irc_366 = function(prefix, args) {
     this.channels[channel].moreNames = false;
     this.forEach(this.displays, function(disobj) {
         if(disobj.window == channel) {
-            this.renderUserlist(disobj);
+            this.render(disobj);
         }
     }, this);
 };
@@ -245,7 +245,7 @@ jIRCs.prototype.irc_332 = function(prefix, args) {
     if(!this.channels[channel].topic) {
         this.channels[channel].topic = {};
     }
-    this.channels[channel].topic.message = args[2].substr(1);
+    this.channels[channel].topic.message = args[2];
     this.forEach(this.displays, function(disobj) {
         if(disobj.window == channel) {
             this.renderTopic(disobj);
@@ -274,7 +274,7 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
     }
     this.channels[channel].topic.creator = prefix;
     this.channels[channel].topic.time = new Date();
-    this.channels[channel].topic.message = args[1].substr(1);
+    this.channels[channel].topic.message = args[1];
     this.forEach(this.displays, function(disobj) {
         if(disobj.window == channel) {
             this.renderTopic(disobj);

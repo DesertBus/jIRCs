@@ -474,6 +474,7 @@ jIRCs.prototype.renderUserlist = function(disobj) {
     disobj.userlistD.style.width = '0px';
     var users = {};
     var prefix = '', rank = '';
+    var width = 0, height = 0;
     this.forEach(this.channels[disobj.window].names, function(prefix, u) {
         if(prefix.length) {
             prefix = prefix.charAt(0);
@@ -497,10 +498,22 @@ jIRCs.prototype.renderUserlist = function(disobj) {
             p.appendChild(document.createTextNode(u));
             p.className = 'jircs_userlist_user';
             disobj.userlist.appendChild(p);
+            var dim = this.measureText(u,'jircs_userlist_user');
+            width = Math.max(dim["width"], width);
+            height += dim["height"];
         }, this);
     }, this);
-    disobj.userlistD.style.width = (disobj.userlist.scrollWidth + 20) + 'px';
-    disobj.channels[disobj.window].table.style.width = (disobj.chatWindow.clientWidth - 40) + 'px';
+    // Account for scrollbar
+    if(height > disobj.userlistD.clientHeight) {
+        disobj.userlistD.style.width = (width + 20) + 'px';
+    } else {
+        disobj.userlistD.style.width = width + 'px';
+    }
+    if(disobj.channels[disobj.window].table.height > disobj.chatWindow.clientHeight) {
+        disobj.channels[disobj.window].table.style.width = (disobj.chatWindow.clientWidth - 20) + 'px';
+    } else {
+        disobj.channels[disobj.window].table.style.width = disobj.chatWindow.clientWidth + 'px';
+    }
     disobj.channels[disobj.window].table.style.display = 'table';
     disobj.userlist.scrollTop = 0;
 };

@@ -6,16 +6,16 @@
         <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
         <script src="jircs.js"></script>
         <script src="utils.js"></script>
-        <script src="gui.js"></script>
+        <script src="gui2.js"></script>
         <script src="irc_commands.js"></script>
         <script src="user_commands.js"></script>
         <script src="ctcp_commands.js"></script>
         <script>
             function randrange(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
-            var irc = new jIRCs(new SockJS("http://23.21.47.44:8000/proxy"));
+            var irc = new jIRCs(new SockJS("http://dbtest.fugiman.com:8000/"));
             irc.nick('jIRCs-' + randrange(1000,9999));
             
-            window.onbeforeunload = function (e) {
+            window.onbeforeunload = function(e) {
                 var message = "Are you sure you want to leave?";
                 e = e || window.event;
                 if (e) {
@@ -23,18 +23,26 @@
                 }
                 return message;
             };
+            
+            window.onresize = function() {
+                var h = 460;
+                if (document.body && document.body.offsetHeight) {
+                    h = document.body.offsetHeight;
+                }
+                if (document.compatMode=='CSS1Compat' && document.documentElement && document.documentElement.offsetHeight) {
+                    h = document.documentElement.offsetHeight;
+                }
+                if (window.innerHeight) {
+                    h = window.innerHeight;
+                }
+                document.getElementById("jircs").style.height = (h - 16) + "px";
+            };
         </script>
     </head>
     <body> 
-        <table style="height: 700px; width: 100%;">
-            <tr>
-                <td style="width: 50%;">
-                    <script>irc.display();</script>
-                </td>
-                <td style="width: 50%;">
-                    <script>irc.display();</script>
-                </td>
-            </tr>
-        </table>
+        <div id="jircs">
+            <script>window.onresize();</script>
+            <script>irc.display();</script>
+        </div>
     </body>
 </html>

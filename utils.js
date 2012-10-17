@@ -24,7 +24,7 @@ jIRCs.prototype.handleLine = function(message, disobj) {
             this.send(command, args);
         }
     } else {
-        this.say(message, disobj.window);
+        this.say(message, disobj.viewing);
     }
 };
 
@@ -165,4 +165,21 @@ jIRCs.prototype.repeat = function(pattern, count) {
         count >>= 1, pattern += pattern;
     }
     return result;
+};
+
+jIRCs.prototype.measureText = function(text, classname) {
+    var div = document.createElement("div");
+    if(classname) {
+        div.class = classname;
+    }
+    div.style.position = "absolute";
+    div.style.visibility = "hidden";
+    div.style.height = "auto";
+    div.style.width = "auto";
+    div.innerText = text;
+    document.body.appendChild(div);
+    r = {"height": div.clientHeight, "width": div.clientWidth};
+    document.body.removeChild(div);
+    console.log("===", text, classname, r["height"], r["width"]);
+    return r;
 };
