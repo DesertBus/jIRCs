@@ -1,5 +1,5 @@
 jIRCs.prototype.command_NICK = function(args, disobj) {
-    if(/^\w+$/.test(args[0])) {
+    if(/^[\w-]+$/.test(args[0])) {
         this.send('NICK',args);
     } else {
         this.renderLine(disobj.viewing,'',args[0]+' is an invalid nickname. Please try another.');
