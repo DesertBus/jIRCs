@@ -307,7 +307,8 @@ jIRCs.prototype.render = function(disobj) {
         }, this);
     }
     // Re-generate input bar
-    disobj.name.innerText = this.nickname+"\u00A0"; // \u00A0 = non-breaking space
+    disobj.name.innerHTML = "";
+    disobj.name.appendChild(document.createTextNode(this.nickname+"\u00A0")); // \u00A0 = non-breaking space
     disobj.input.style.width = "0px";
     disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth) + "px";
     // Fix all the heights
@@ -327,9 +328,9 @@ jIRCs.prototype.render = function(disobj) {
     // Calculate message width
     this.forEach(disobj.lines[disobj.viewing], function(line) {
         var dim;
-        dim = this.measureText(line.time.innerText, line.time.className);
+        dim = this.measureText(line.time.textContent || line.time.innerText, line.time.className);
         timew = Math.max(dim["width"], timew);
-        dim = this.measureText(line.name.innerText, line.name.className);
+        dim = this.measureText(line.name.textContent || line.name.innerText, line.name.className);
         namew = Math.max(dim["width"], namew);
     }, this);
     // Assume we need scrollbars

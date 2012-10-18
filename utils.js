@@ -176,7 +176,7 @@ jIRCs.prototype.measureText = function(text, classname) {
     div.style.visibility = "hidden";
     div.style.height = "auto";
     div.style.width = "auto";
-    div.innerText = text;
+    div.appendChild(document.createTextNode(text));
     document.body.appendChild(div);
     r = {"height": div.offsetHeight+1, "width": div.offsetWidth+1};
     document.body.removeChild(div);
