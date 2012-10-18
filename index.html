@@ -36,6 +36,7 @@
                     h = window.innerHeight;
                 }
                 document.getElementById("jircs").style.height = (h - 16) + "px";
+                irc.forEach(irc.displays, irc.render, irc);
             };
         </script>
     </head>
