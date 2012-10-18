@@ -39,7 +39,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
         if(document.activeElement == disobj.messagebox && prefix == this.nickname) {
             this.activateChan(channel, disobj);
         }
-        if(disobj.window == channel) {
+        if(disobj.viewing == channel) {
             this.render(disobj);
         }
     }, this);
@@ -54,7 +54,7 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
         this.renderLine(channel, '', prefix + " left " + channel + " [" + reason + "]");
         delete(this.channels[channel].names[prefix]);
         this.forEach(this.displays, function(disobj) {
-            if(disobj.window == channel) {
+            if(disobj.viewing == channel) {
                 this.render(disobj);
             }
         }, this);
@@ -235,7 +235,7 @@ jIRCs.prototype.irc_366 = function(prefix, args) {
     var channel = args[1].toLowerCase();
     this.channels[channel].moreNames = false;
     this.forEach(this.displays, function(disobj) {
-        if(disobj.window == channel) {
+        if(disobj.viewing == channel) {
             this.render(disobj);
         }
     }, this);
@@ -248,7 +248,7 @@ jIRCs.prototype.irc_332 = function(prefix, args) {
     }
     this.channels[channel].topic.message = args[2];
     this.forEach(this.displays, function(disobj) {
-        if(disobj.window == channel) {
+        if(disobj.viewing == channel) {
             this.renderTopic(disobj);
         }
     }, this);
@@ -262,7 +262,7 @@ jIRCs.prototype.irc_333 = function(prefix, args) {
     this.channels[channel].topic.creator = args[2];
     this.channels[channel].topic.time = new Date(args[3] * 1000);
     this.forEach(this.displays, function(disobj) {
-        if(disobj.window == channel) {
+        if(disobj.viewing == channel) {
             this.renderTopic(disobj);
         }
     }, this);
@@ -277,7 +277,7 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
     this.channels[channel].topic.time = new Date();
     this.channels[channel].topic.message = args[1];
     this.forEach(this.displays, function(disobj) {
-        if(disobj.window == channel) {
+        if(disobj.viewing == channel) {
             this.renderTopic(disobj);
         }
     }, this);

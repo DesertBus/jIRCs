@@ -93,8 +93,8 @@ jIRCs.prototype.parseModes = function(channel, modes, params) {
                         }
                     }
                     this.forEach(this.displays, function(disobj) {
-                        if(disobj.window == channel) {
-                            this.renderUserlist(disobj);
+                        if(disobj.viewing == channel) {
+                            this.render(disobj);
                         }
                     }, this);
                 } else {

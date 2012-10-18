@@ -143,7 +143,7 @@ jIRCs.prototype.display = function(container) {
             var name = e.target.value.substring(begin,end);
             var possible = [];
             // Complete the name
-            self.forEach(self.channels[disobj.window].names, function(status, n) {
+            self.forEach(self.channels[disobj.viewing].names, function(status, n) {
                 if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
                     possible.push(n);
                 }
@@ -151,9 +151,9 @@ jIRCs.prototype.display = function(container) {
             if(possible.length == 1) {
                 name = possible[0];
             } else if(possible.length == 0) {
-                self.renderLine(disobj.window,'','No Possible Nicknames');
+                self.renderLine(disobj.viewing,'','No Possible Nicknames');
             } else {
-                self.renderLine(disobj.window,'','Possible Nicknames: '+possible.join(' '));
+                self.renderLine(disobj.viewing,'','Possible Nicknames: '+possible.join(' '));
             }
             e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
             e.preventDefault();
