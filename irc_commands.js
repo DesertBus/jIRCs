@@ -124,7 +124,7 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     } else {
         nick += ' \u2013'; // \u2013 is an en-dash
         this.forEach(this.displays, function(disobj) {
-            this.renderLine(disobj.window, nick, message, disobj);
+            this.renderLine(disobj.viewing, nick, message, disobj);
         }, this);
     }
 };
