@@ -249,7 +249,7 @@ jIRCs.prototype.irc_332 = function(prefix, args) {
     this.channels[channel].topic.message = args[2];
     this.forEach(this.displays, function(disobj) {
         if(disobj.viewing == channel) {
-            this.renderTopic(disobj);
+            this.render(disobj);
         }
     }, this);
 };
@@ -263,7 +263,7 @@ jIRCs.prototype.irc_333 = function(prefix, args) {
     this.channels[channel].topic.time = new Date(args[3] * 1000);
     this.forEach(this.displays, function(disobj) {
         if(disobj.viewing == channel) {
-            this.renderTopic(disobj);
+            this.render(disobj);
         }
     }, this);
 };
@@ -278,7 +278,7 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
     this.channels[channel].topic.message = args[1];
     this.forEach(this.displays, function(disobj) {
         if(disobj.viewing == channel) {
-            this.renderTopic(disobj);
+            this.render(disobj);
         }
     }, this);
 };

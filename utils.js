@@ -170,7 +170,7 @@ jIRCs.prototype.repeat = function(pattern, count) {
 jIRCs.prototype.measureText = function(text, classname) {
     var div = document.createElement("div");
     if(classname) {
-        div.class = classname;
+        div.className = classname;
     }
     div.style.position = "absolute";
     div.style.visibility = "hidden";
@@ -178,7 +178,7 @@ jIRCs.prototype.measureText = function(text, classname) {
     div.style.width = "auto";
     div.innerText = text;
     document.body.appendChild(div);
-    r = {"height": div.clientHeight+1, "width": div.clientWidth+1};
+    r = {"height": div.offsetHeight+1, "width": div.offsetWidth+1};
     document.body.removeChild(div);
     console.log("===", text, classname, r["height"], r["width"]);
     return r;
