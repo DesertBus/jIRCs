@@ -309,10 +309,10 @@ jIRCs.prototype.render = function(disobj) {
     // Re-generate input bar
     disobj.name.innerText = this.nickname+"\u00A0"; // \u00A0 = non-breaking space
     disobj.input.style.width = "0px";
-    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.clientWidth) + "px";
+    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth) + "px";
     // Fix all the heights
     disobj.window.style.height = "0px";
-    componentHeight = disobj.tabbar.clientHeight + disobj.topic.clientHeight + disobj.window.clientHeight + disobj.inputbar.clientHeight + disobj.status.clientHeight;
+    componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
     disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
     if(ulisth > disobj.window.clientHeight) {
         disobj.userlist.style.width = (ulistw + 20) + 'px';
@@ -338,7 +338,7 @@ jIRCs.prototype.render = function(disobj) {
         line.time.style.width = timew + "px";
         line.name.style.width = namew + "px";
         line.message.style.width = mesw + "px";
-        mesh += line.container.clientHeight;
+        mesh += line.container.offsetHeight;
     }, this);
     // If it turns out we don't need scrollbars, fill in the extra space
     if(mesh < disobj.messages.clientHeight) {
