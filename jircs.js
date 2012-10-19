@@ -35,6 +35,7 @@ function jIRCs(conn) {
     this.chantypes = [];
     this.statuses = {};
     this.statusOrder = [];
+    this.statusSymbols = {};
     this.chanModes = {};
     this.userModes = [];
     this.scrollbackSize = 500;

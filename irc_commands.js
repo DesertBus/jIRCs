@@ -88,7 +88,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     if (channel == this.nickname.toLowerCase()) {
         channel = prefix.toLowerCase();
     }
-    if (channel.charAt(0) in this.statuses) {
+    if (channel.charAt(0) in this.statusSymbols) {
         prefix += ":" + channel; // give a visible indication that the message isn't for the whole channel
         channel = channel.substr(1); // trim the status char off so the message gets displayed to the correct channel
     }
@@ -117,7 +117,7 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
     var dest = args.shift().toLowerCase(); // It'll only be used if it's a channel name, anyway
     if (this.chantypes.indexOf(dest.charAt(0)) !== -1 || this.chantypes.indexOf(dest.charAt(1)) !== -1) { // There may or may not be a channel status in the parameter
         nick += ":" + dest + ' \u2013'; // Give a visible indication that the message is a channel notice
-        if (dest.charAt(0) in this.statuses) { // it's not going directly to all of a channel
+        if (dest.charAt(0) in this.statusSymbols) { // it's not going directly to all of a channel
             dest = dest.substr(1); // display it in the correct window
         }
         this.renderLine(dest, nick, message);
@@ -187,6 +187,7 @@ jIRCs.prototype.irc_005 = function(prefix, args) {
             var letters = modes[0].split('');
             this.statuses = this.zip(symbols.concat(letters), letters.concat(symbols));
             this.statusOrder = letters;
+            this.statusSymbols = this.zip(symbols, symbols);
             this.statuses[''] = '';
             this.statusOrder.push('');
         }
@@ -223,7 +224,7 @@ jIRCs.prototype.irc_353 = function(prefix, args) {
     var names = args[3].split(' '); // Strip the colon and split the names out
     this.forEach(names, function(name) {
         var statusList = '';
-        while (name.charAt(0) in this.statuses) {
+        while (name.charAt(0) in this.statusSymbols) {
             statusList += name.charAt(0);
             name = name.substr(1);
         }

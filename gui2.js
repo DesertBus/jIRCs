@@ -40,6 +40,7 @@ jIRCs.prototype.display = function(container) {
         'viewing': '',
         'tabs': {},
         'lines': {},
+        'widths': {},
         'history': [],
         'options': {
             'show_userlist': true,
@@ -348,6 +349,12 @@ jIRCs.prototype.render = function(disobj) {
             line.message.style.width = mesw + "px";
         }, this);
     }
+    if(!(disobj.viewing in disobj.widths)) {
+        disobj.widths[disobj.viewing] = {};
+    }
+    disobj.widths[disobj.viewing].time = timew;
+    disobj.widths[disobj.viewing].name = namew;
+    disobj.widths[disobj.viewing].message = mesw;
 };
 
 jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
@@ -375,6 +382,11 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     }
     var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
     text.innerHTML = this.formatLine(text.innerHTML);
+    var widths = {
+        "time": this.measureText(date.textContent || date.innerText, date.className).width,
+        "name": this.measureText(user.textContent || user.innerText, user.className).width,
+        "message": this.measureText(text.textContent || text.innerText, text.className).width,
+    };
     if(!(channel in this.channels)) {
         this.channels[channel] = {} // Add a new object in which we can store channel data
     }
@@ -392,6 +404,9 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         if (!disobj.tabs[channel]) {
             this.initChan(channel, disobj);
         }
+        if(!(disobj.viewing in disobj.widths)) {
+            disobj.widths[disobj.viewing] = {};
+        }
         // Do we need to scroll?
         var b = (disobj.messages.scrollHeight < disobj.messages.clientHeight || disobj.messages.scrollHeight <= disobj.messages.scrollTop + disobj.messages.clientHeight + 50); // 50px buffer just in case
         // Clone the row
@@ -399,6 +414,9 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         var d = date.cloneNode(true);
         var u = user.cloneNode(true);
         var t = text.cloneNode(true);
+        d.style.width = disobj.widths[disobj.viewing].time + "px";
+        u.style.width = disobj.widths[disobj.viewing].name + "px";
+        t.style.width = disobj.widths[disobj.viewing].message + "px";
         r.className = "jircs_chatRow";
         if(nickCheck.test(message)) { // Hilight
             r.className += " jircs_hilight";
@@ -419,7 +437,10 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             while(disobj.messages.children.length > this.scrollbackSize) {
                 disobj.messages.removeChild(disobj.messages.firstChild);
             }
-            this.render(disobj); // Brute-force dimensions into submission
+            console.log(widths.time, disobj.widths[disobj.viewing].time, widths.name, disobj.widths[disobj.viewing].name, widths.message, disobj.widths[disobj.viewing].message);
+            if(widths.time > disobj.widths[disobj.viewing].time || widths.name > disobj.widths[disobj.viewing].name || widths.message > disobj.widths[disobj.viewing].message) {
+                this.render(disobj); // Brute-force dimensions into submission
+            }
         }
         if(b) {
             disobj.messages.scrollTop = disobj.messages.scrollHeight - disobj.messages.clientHeight; // Only scroll when user is at the bottom
@@ -435,6 +456,146 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     }, this);
 };
 
+// This function is a disaster and should be fixed whenever possible
 jIRCs.prototype.formatLine = function(line) {
-    return line;
+    line = line.replace(this.url_regex, this.linkMunger); // Auto-linkify links
+    line = line.replace(/([>\s])(#[^\s\a,:]+?)([<\s])/ig,'$1<a href="$2" class="jircs_channel_link">$2</a>$3'); // Auto-linkify channels
+    
+    var depth = 0;
+    var l = '';
+    var bold = false;
+    var italic = false;
+    var underline = false;
+    var color = { foreground: false, background: false, tmp: '', state: 0, set: false };
+    this.forEach(line, function(c) {
+        var rebuild = false;
+        var defer = false;
+        if(c == '\u0002') { // Bold
+            if(bold) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_bold">';
+                depth += 1;
+            }
+            bold = !bold;
+        } else if(c == '\u0016') { // Reverse
+            if (!color.foreground) {
+                color.foreground = '1'; // The default foreground color is 1
+            }
+            if (!color.background) {
+                color.background = '0'; // The default background color is 0
+            }
+            var swap = color.foreground;
+            color.foreground = color.background;
+            color.background = swap;
+            if(color.set) {
+                l += '<span>';
+                depth += 1;
+            } else {
+                l += '<span><span>';
+                depth += 2;
+            }
+            color.set = rebuild = true;
+        } else if(c == '\u001D') { // Italic
+            if(italic) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_italic">';
+                depth += 1;
+            }
+            italic = !italic;
+        } else if(c == '\u001F') { // Underline
+            if(underline) {
+                rebuild = true;
+            } else {
+                l += '<span class="jircs_underline">';
+                depth += 1;
+            }
+            underline = !underline;
+        } else if(c == '\u0003') { // Color
+            color.state = 1;
+        } else if(color.state == 1) {
+            if(isNaN(parseInt(c))) {
+                color.state = 0
+                color.foreground = color.background = color.set = false;
+                defer = rebuild = true;
+            } else {
+                color.tmp += c;
+                color.state = 2;
+            }
+        } else if(color.state == 2) {
+            if(isNaN(parseInt(c))) {
+                color.foreground = color.tmp;
+                color.tmp = '';
+                if(c == ',') {
+                    color.state = 3;
+                } else {
+                    color.state = 0;
+                    defer = true;
+                    depth += 1;
+                    if(color.set) {
+                        // Rebuild colors hack
+                        l += '<span>';
+                        rebuild = true;
+                    } else {
+                        color.set = true;
+                        l += '<span class="jircs_color_foreground_' + parseInt(color.foreground) + '">';
+                    }
+                }
+            } else {
+                color.tmp += c;
+            }
+        } else if(color.state == 3) {
+            if(isNaN(parseInt(c))) {
+                if(color.tmp) {
+                    color.background = color.tmp;
+                }
+                color.tmp = '';
+                color.state = 0;
+                defer = true;
+                depth += 1;
+                if(color.set) {
+                    // Rebuild colors hack
+                    l += '<span>';
+                    rebuild = true;
+                } else {
+                    color.set = true;
+                    l += '<span class="jircs_color_foreground_' + parseInt(color.foreground) + ' jircs_color_background_' + parseInt(color.background) + '">';
+                }
+            } else {
+                color.tmp += c;
+            }
+        } else if(c == '\u000F') {
+            l += this.repeat('</span>', depth);
+            depth = 0;
+            bold = italic = underline = color.foreground = color.background = color.set = false;
+        } else {
+            l += c;
+        }
+        if(rebuild) {
+            l += this.repeat('</span>', depth);
+            depth -= 1;
+            if(bold) {
+                l += '<span class="jircs_bold">';
+            }
+            if(italic) {
+                l += '<span class="jircs_italic">';
+            }
+            if(underline) {
+                l += '<span class="jircs_underline">';
+            }
+            if(color.foreground) {
+                l += '<span class="jircs_color_foreground_' + parseInt(color.foreground);
+                if(color.background) {
+                    l += ' jircs_color_background_' + parseInt(color.background);
+                }
+                l += '">';
+            }
+        }
+        if(defer) {
+            l += c;
+        }
+    }, this);
+    l += this.repeat('</span>', depth);
+    return l;
 };
