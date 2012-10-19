@@ -10,7 +10,7 @@ jIRCs.prototype.display = function(container) {
     var window = document.createElement('div');
     var chat = document.createElement('div');
     var messages = document.createElement('div');
-    var notificiation = document.createElement('div');
+    var notification = document.createElement('div');
     var userlist = document.createElement('div');
     var inputbar = document.createElement('div');
     var status = document.createElement('div');
@@ -28,7 +28,7 @@ jIRCs.prototype.display = function(container) {
         'window': window,
         'chat': chat,
         'messages': messages,
-        'notificiation': notificiation,
+        'notification': notification,
         'userlist': userlist,
         'inputbar': inputbar,
         'status': status,
@@ -45,7 +45,8 @@ jIRCs.prototype.display = function(container) {
         'options': {
             'show_userlist': true,
             'show_auction': true
-        }
+        },
+        'note_timer': false
     };
     
     // Set all them fancy classes
@@ -55,7 +56,7 @@ jIRCs.prototype.display = function(container) {
     window.className = "jircs_window";
     chat.className = "jircs_chat";
     messages.className = "jircs_messages";
-    notificiation.className = "jircs_notificiation";
+    notification.className = "jircs_notification";
     userlist.className = "jircs_userlist";
     inputbar.className = "jircs_inputbar";
     status.className = "jircs_status";
@@ -88,7 +89,7 @@ jIRCs.prototype.display = function(container) {
     window.appendChild(chat);
     window.appendChild(userlist);
     chat.appendChild(messages);
-    chat.appendChild(notificiation);
+    chat.appendChild(notification);
     inputbar.appendChild(form);
     form.appendChild(name);
     form.appendChild(input);
@@ -332,7 +333,7 @@ jIRCs.prototype.render = function(disobj) {
     }
     disobj.userlist.style.height = disobj.window.clientHeight + "px";
     disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth) + "px";
-    disobj.messages.style.height = (disobj.window.clientHeight - disobj.notificiation.offsetHeight) + "px";
+    disobj.messages.style.height = (disobj.window.clientHeight - disobj.notification.offsetHeight) + "px";
     // Ensure standardized width of messages
     var timew = 0, namew = 0, mesh = 0, mesw = 0;
     // Calculate message width
@@ -615,9 +616,22 @@ jIRCs.prototype.formatLine = function(line) {
 };
 
 jIRCs.prototype.renderNotification = function(message, disobj) {
-
+    if(disobj.note_timer) {
+        clearTimeout(disobj.note_timer);
+    }
+    disobj.notification.innerHTML = "";
+    disobj.notification.appendChild(document.createTextNode(message));
+    this.render(disobj);
+    disobj.note_timer = setTimeout(function() {
+        disobj.notification.innerHTML = "";
+        this.render(disobj);
+        disobj.note_timer = false;
+    }, 5000);
 };
 
 jIRCs.prototype.renderStatus = function(message) {
-
+    this.forEach(this.displays, function(disobj) {
+        disobj.status.innerHTML = message;
+        this.render(disobj);
+    }, this);
 };
