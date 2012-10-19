@@ -385,9 +385,6 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     user.style.display = "inline-block";
     text.style.display = "inline-block";
     text.style.wordWrap = "break-word";
-    date.appendChild(document.createTextNode('[' + (h.length > 1 ? h : '0'+h) + ':' + (m.length > 1 ? m : '0'+m) + ':' + (s.length > 1 ? s : '0'+s) + ']'));
-    user.appendChild(document.createTextNode("\u00A0"+speaker+"\u00A0")); // \u00A0 = non-breaking space
-    text.appendChild(document.createTextNode(message));
     if(speaker == '') {
         text.className += " jircs_action";
     }
@@ -395,6 +392,9 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
         speaker = '';
         text.className += " jircs_event";
     }
+    date.appendChild(document.createTextNode('[' + (h.length > 1 ? h : '0'+h) + ':' + (m.length > 1 ? m : '0'+m) + ':' + (s.length > 1 ? s : '0'+s) + ']'));
+    user.appendChild(document.createTextNode("\u00A0"+speaker+"\u00A0")); // \u00A0 = non-breaking space
+    text.appendChild(document.createTextNode(message));
     var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
     text.innerHTML = this.formatLine(text.innerHTML);
     var widths = {
