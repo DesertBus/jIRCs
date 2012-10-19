@@ -1,31 +1,50 @@
+/* The major elements */
 .jircs_main {
     width: 100%;
+}
+.jircs_tabbar {
+    background-color: #AAA;
+    border-radius: 5px 5px 0px 0px;
 }
 .jircs_topic {
     font-size: 0.8em;
 }
-.jircs_topic p, .jircs_userlist p {
-    margin: 0px;
+.jircs_topic_message {
 }
 .jircs_topic_creator {
     text-align: right;
 }
-.jircs_messages, .jircs_userlist {
-    vertical-align: top;
-    overflow: auto;
+.jircs_window {
 }
+.jirc_chat {
+}
+.jircs_messages {
+}
+.jircs_notificiation {
+}
+.jircs_userlist {
+}
+.jircs_inputbar {
+}
+.jircs_form {
+}
+.jircs_name {
+}
+.jircs_input {
+}
+.jircs_send {
+}
+.jircs_status {
+}
+/* Chat messages */
 .jircs_chatRow {
     border-bottom: 1px solid gray;
 }
 .jircs_chatDate {
-    width: 80px;
 }
 .jircs_chatUser {
-    width: 160px;
-    word-wrap: break-word;
 }
 .jircs_chatText {
-    word-wrap: break-word;
 }
 .jircs_hilight {
     color: red;
@@ -33,14 +52,10 @@
 .jircs_action {
     font-style: italic;
 }
-.jircs_input {
-    display: block;
-    width: 100%;
+.jircs_event {
+    font-style: italic;
 }
-.jircs_tabBar {
-    background-color: #AAA;
-    border-radius: 5px 5px 0px 0px;
-}
+/* Tab styling */
 .jircs_tab {
     color: #222;
     background-color: #CCC;
@@ -50,8 +65,6 @@
     border-radius: 5px 5px 0px 0px;
     padding-left: 10px;
     padding-right: 15px;
-    overflow: hidden;
-    position: relative; /*captures the close button*/
 }
 .jircs_tab:hover {
     background-color: #DDD;

@@ -71,6 +71,10 @@ jIRCs.prototype.display = function(container) {
     userlist.style.display = "inline-block";
     form.style.display = "inline-block";
     input.style.display = "inline-block";
+    messages.style.verticalAlign = "top";
+    messages.style.overflow = "auto";
+    userlist.style.verticalAlign = "top";
+    userlist.style.overflow = "auto";
     input.type = 'text';
     send.type = "submit";
     send.value = "Send";
@@ -152,9 +156,9 @@ jIRCs.prototype.display = function(container) {
             if(possible.length == 1) {
                 name = possible[0];
             } else if(possible.length == 0) {
-                self.renderLine(disobj.viewing,'','No Possible Nicknames');
+                self.renderNotification('No Possible Nicknames', disobj);
             } else {
-                self.renderLine(disobj.viewing,'','Possible Nicknames: '+possible.join(' '));
+                self.renderNotification('Possible Nicknames: '+possible.join(' '), disobj);
             }
             e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
             e.preventDefault();
@@ -170,6 +174,8 @@ jIRCs.prototype.display = function(container) {
 jIRCs.prototype.initChan = function(channel, disobj) {
     var tab = document.createElement('span');
     tab.className = "jircs_tab";
+    tab.style.position = "relative";
+    tab.style.overflow = "hidden";
     tab.appendChild(document.createTextNode(channel));
     self = this;
     tab.addEventListener("click", function() {
@@ -251,12 +257,14 @@ jIRCs.prototype.render = function(disobj) {
     disobj.topic.innerHTML = "";
     if(disobj.viewing in this.channels && this.channels[disobj.viewing].topic) {
         var tmsg = document.createElement('p');
+        tmsg.style.margin = "0";
         tmsg.appendChild(document.createTextNode(this.channels[disobj.viewing].topic.message));
         tmsg.className = 'jircs_topic_message';
         tmsg.innerHTML = this.formatLine(tmsg.innerHTML);
         disobj.topic.appendChild(tmsg);
         if(this.channels[disobj.viewing].topic.creator) {
             var tcreator = document.createElement('p');
+            tcreator.style.margin = "0";
             var msg = 'Set by ' + this.channels[disobj.viewing].topic.creator;
             if(this.channels[disobj.viewing].topic.time) { 
                 var t = this.channels[disobj.viewing].topic.time;
@@ -298,6 +306,7 @@ jIRCs.prototype.render = function(disobj) {
             console.log(ulist);
             this.forEach(ulist, function(u) {
                 var p = document.createElement('p');
+                p.style.margin = "0";
                 p.appendChild(document.createTextNode(u));
                 p.className = 'jircs_userlist_user';
                 disobj.userlist.appendChild(p);
@@ -374,11 +383,16 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     date.style.display = "inline-block";
     user.style.display = "inline-block";
     text.style.display = "inline-block";
+    text.style.wordWrap = "break-word";
     date.appendChild(document.createTextNode('[' + (h.length > 1 ? h : '0'+h) + ':' + (m.length > 1 ? m : '0'+m) + ':' + (s.length > 1 ? s : '0'+s) + ']'));
     user.appendChild(document.createTextNode("\u00A0"+speaker+"\u00A0")); // \u00A0 = non-breaking space
     text.appendChild(document.createTextNode(message));
     if(speaker == '') {
         text.className += " jircs_action";
+    }
+    if(speaker == channel) {
+        speaker = '';
+        text.className += " jircs_event";
     }
     var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
     text.innerHTML = this.formatLine(text.innerHTML);
@@ -598,4 +612,12 @@ jIRCs.prototype.formatLine = function(line) {
     }, this);
     l += this.repeat('</span>', depth);
     return l;
+};
+
+jIRCs.prototype.renderNotification = function(message, disobj) {
+
+};
+
+jIRCs.prototype.renderStatus = function(message) {
+
 };

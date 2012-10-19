@@ -60,7 +60,7 @@ jIRCs.prototype.nick = function(nick) {
 /* Private interface */
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
-    this.renderLine('','','Connected to server.');
+    this.renderStatus('Connected to server.');
     this.forEach(this.queue, this.send, this);
     this.queue = [];
 };
@@ -73,7 +73,7 @@ jIRCs.prototype.ondisconnect = function(evt) {
         }
     }, this);
     console.log("Disconnected");
-    this.renderLine('','','Disconnected from server.');
+    this.renderStatus('Disconnected from server.');
 };
 
 jIRCs.prototype.onmessage = function(evt) {
