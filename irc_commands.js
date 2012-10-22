@@ -115,18 +115,18 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
         console.debug(
             cleaned,
             parts,
-            parts.slice(0,1).join(" "),
             parts.slice(0,2).join(" "),
+            parts.slice(0,3).join(" "),
             ~cleaned.indexOf("has the high bid of"),
             ~cleaned.indexOf("New highest bid is by"),
             parts.slice(0,1).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled"),
             parts[0] == "Sold!"
         );
-        if(parts.slice(0,1).join(" ") == "Starting Auction") {
+        if(parts.slice(0,2).join(" ") == "Starting Auction") {
             var id = parts[4].slice(1,-1);
             var name = parts.slice(5,-4);
             this.auctionStart(id,name);
-        } else if(parts.slice(0,2).join(" ") == "Beginning bidding at") {
+        } else if(parts.slice(0,3).join(" ") == "Beginning bidding at") {
             var starting = parts[3];
             this.auctionBid(starting,"Nobody");
         } else if(~cleaned.indexOf("has the high bid of")) { // ~ abuses two's complement notation to make -1 false, and everything else true
@@ -144,7 +144,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
             var bidder = parts[5];
             var bid = parts[7];
             this.auctionBid(bid,bidder);
-        } else if(parts.slice(0,1).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled")) {
+        } else if(parts.slice(0,2).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled")) {
             this.auctionStop();
         } else if(parts[0] == "Sold!") {
             this.auctionStop();
