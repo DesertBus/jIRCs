@@ -124,6 +124,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
             while(index < parts.length - 5) {
                 if(parts[index+1] == "has" && parts[index+2] == "the" && parts[index+3] == "high" && parts[index+4] == "bid" && parts[index+5] == "of")
                     break;
+                index++;
             }
             var bidder = parts[index];
             var bid = parts[index + 6];
