@@ -309,7 +309,6 @@ jIRCs.prototype.render = function(disobj) {
             var ulist = users[r];
             // Case insensitive sort
             ulist.sort(function(a,b) { if(a.toLowerCase() > b.toLowerCase()) return 1; if(a.toLowerCase() < b.toLowerCase()) return -1; return 0;});
-            console.log(ulist);
             this.forEach(ulist, function(u) {
                 var p = document.createElement('p');
                 p.style.margin = "0";
@@ -457,7 +456,6 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             while(disobj.messages.children.length > this.scrollbackSize) {
                 disobj.messages.removeChild(disobj.messages.firstChild);
             }
-            console.log(widths.time, disobj.widths[disobj.viewing].time, widths.name, disobj.widths[disobj.viewing].name, widths.message, disobj.widths[disobj.viewing].message);
             if(widths.time > disobj.widths[disobj.viewing].time || widths.name > disobj.widths[disobj.viewing].name || widths.message > disobj.widths[disobj.viewing].message) {
                 this.render(disobj); // Brute-force dimensions into submission
             }

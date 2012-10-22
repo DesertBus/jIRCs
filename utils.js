@@ -5,7 +5,6 @@ jIRCs.prototype.tlds = ["AC","AD","AE","AERO","AF","AG","AI","AL","AM","AN","AO"
 jIRCs.prototype.url_regex = new RegExp('(\\b)(?:(https?|ftp|svn|git)://)?((?:[a-z0-9](?:[a-z0-9\\-]*[a-z0-9])?\\.)+(?:'+jIRCs.prototype.tlds.join('|')+'))(/[^\\s]*[^\\s`!()\\[\\]{};:\'".,<>?«»“”‘’])?(\\b)','ig');
 
 jIRCs.prototype.linkMunger = function(match, b1, protocol, domain, path, b2, offset, string) {
-    console.info(match, b1, protocol, domain, path, b2, offset, string);
     var url = match;
     if(!protocol) {
         url = 'http://' + url;
@@ -180,6 +179,5 @@ jIRCs.prototype.measureText = function(text, classname) {
     document.body.appendChild(div);
     r = {"height": div.offsetHeight+1, "width": div.offsetWidth+1};
     document.body.removeChild(div);
-    //console.log("===", text, classname, r["height"], r["width"]);
     return r;
 };
