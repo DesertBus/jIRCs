@@ -180,6 +180,6 @@ jIRCs.prototype.measureText = function(text, classname) {
     document.body.appendChild(div);
     r = {"height": div.offsetHeight+1, "width": div.offsetWidth+1};
     document.body.removeChild(div);
-    console.log("===", text, classname, r["height"], r["width"]);
+    //console.log("===", text, classname, r["height"], r["width"]);
     return r;
 };

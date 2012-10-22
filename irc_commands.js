@@ -109,6 +109,36 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     } else {
         this.renderLine(channel, "<"+prefix+">", message);
     }
+    if(prefix == "BidServ") {
+        var cleaned = message.replace("\u0001","").replace("\u0002","").replace("\u00034","").replace("\u000F","").replace("\u0016","").replace("\u001D","").replace("\u001F","");
+        var parts = cleaned.split(" ");
+        if(parts.slice(0,1).join(" ") == "Starting Auction") {
+            var id = parts[4].slice(1,-1);
+            var name = parts.slice(5,-4);
+            this.auctionStart(id,name);
+        } else if(parts.slice(0,2).join(" ") == "Beginning bidding at") {
+            var starting = parts[3];
+            this.auctionBid(starting,"Nobody");
+        } else if(~cleaned.indexOf("has the high bid of")) { // ~ abuses two's complement notation to make -1 false, and everything else true
+            var index = 0;
+            while(index < parts.length - 5) {
+                if(parts[index+1] == "has" && parts[index+2] == "the" && parts[index+3] == "high" && parts[index+4] == "bid" && parts[index+5] == "of")
+                    break;
+            }
+            var bidder = parts[index];
+            var bid = parts[index + 6];
+            this.auctionBid(bid,bidder);
+        } else if(~cleaned.indexOf("New highest bid is by")) {
+            parts = cleaned.substr(cleaned.indexOf("New highest bid is by")).split(" ");
+            var bidder = parts[5];
+            var bid = parts[7];
+            this.auctionBid(bid,bidder);
+        } else if(parts.slice(0,1).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled")) {
+            this.auctionStop();
+        } else if(parts[0] == "Sold!") {
+            this.auctionStop();
+        }
+    }
 };
 
 jIRCs.prototype.irc_NOTICE = function(prefix, args) {

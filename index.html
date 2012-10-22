@@ -12,7 +12,7 @@
         <script src="ctcp_commands.js"></script>
         <script>
             function randrange(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; };
-            var irc = new jIRCs(new SockJS("http://dbtest.fugiman.com:8000/"));
+            var irc = new jIRCs(new SockJS("http://dbtest.fugiman.com:8080/"));
             irc.nick('jIRCs-' + randrange(1000,9999));
             
             window.onbeforeunload = function(e) {

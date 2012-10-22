@@ -7,6 +7,7 @@ jIRCs.prototype.display = function(container) {
     // Create the DOM
     var tabbar = document.createElement('div');
     var topic = document.createElement('div');
+    var auction = document.createElement('div');
     var window = document.createElement('div');
     var chat = document.createElement('div');
     var messages = document.createElement('div');
@@ -25,6 +26,7 @@ jIRCs.prototype.display = function(container) {
         'container': container,
         'tabbar': tabbar,
         'topic': topic,
+        'auction': auction,
         'window': window,
         'chat': chat,
         'messages': messages,
@@ -53,6 +55,7 @@ jIRCs.prototype.display = function(container) {
     container.className = "jircs_main";
     tabbar.className = "jircs_tabbar";
     topic.className = "jircs_topic";
+    auction.className = "jircs_auction";
     window.className = "jircs_window";
     chat.className = "jircs_chat";
     messages.className = "jircs_messages";
@@ -83,6 +86,7 @@ jIRCs.prototype.display = function(container) {
     // Attach all those elements together
     container.appendChild(tabbar);
     container.appendChild(topic);
+    container.appendChild(auction);
     container.appendChild(window);
     container.appendChild(inputbar);
     container.appendChild(status);
@@ -279,6 +283,7 @@ jIRCs.prototype.render = function(disobj) {
             disobj.topic.appendChild(tcreator);
         }
     }
+    // Re-generate auction
     // Re-generate userlist
     var ulistw = 0, ulisth = 0;
     if(disobj.viewing in this.channels) {
@@ -324,7 +329,7 @@ jIRCs.prototype.render = function(disobj) {
     disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth) + "px";
     // Fix all the heights
     disobj.window.style.height = "0px";
-    componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
+    componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
     disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
     if(ulisth > disobj.window.clientHeight) {
         disobj.userlist.style.width = (ulistw + 20) + 'px';
@@ -635,3 +640,58 @@ jIRCs.prototype.renderStatus = function(message) {
         this.render(disobj);
     }, this);
 };
+
+jIRCs.prototype.auctionStart = function(id, name) {
+    this.forEach(this.displays, function(disobj) {
+        disobj.auction.innerHTML = "";
+        var self = this;
+        var image = document.createElement("img");
+        var title = document.createElement("span");
+        var bidder = document.createElement("span");
+        var bid = document.createElement("span");
+        var form = document.createElement("form");
+        var input = document.createElement("input");
+        var submit = document.createElement("input");
+        image.src = "http://desertbus.org/thumbs/irc/"+id+".png";
+        title.appendChild(document.createTextNode(name));
+        form.addEventListener("submit", function(e) {
+            self.command_BID(input.value.split(" "), disobj);
+            input.value = '';
+            e.preventDefault();
+        });
+        input.type = "text";
+        submit.type = "submit";
+        submit.value = "Bid";
+        disobj.auction._hax = {
+            "image": image,
+            "title": title,
+            "bidder": bidder,
+            "bid": bid,
+            "form": form,
+            "input": input,
+            "submit": submit
+        };
+        this.render(disobj);
+    }, this);
+};
+
+jIRCs.prototype.auctionBid = function(bid, bidder) {
+    this.forEach(this.displays, function(disobj) {
+        if(!disobj.auction._hax)
+            return;
+        disobj.auction._hax.bid.innerHTML = "";
+        disobj.auction._hax.bidder.innerHTML = "";
+        disobj.auction._hax.bid.appendChild(document.createTextNode(bid));
+        disobj.auction._hax.bidder.appendChild(document.createTextNode(bidder));
+        this.render(disobj);
+    }, this);
+};
+
+jIRCs.prototype.auctionStop = function() {
+    this.forEach(this.displays, function(disobj) {
+        disobj.auction.innerHTML = "";
+        disobj.auction._hax = false;
+        this.render(disobj);
+    }, this);
+};
+
