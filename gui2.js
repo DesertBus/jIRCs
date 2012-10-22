@@ -669,6 +669,13 @@ jIRCs.prototype.auctionStart = function(id, name) {
             "input": input,
             "submit": submit
         };
+        disobj.auction.appendChild(image);
+        disobj.auction.appendChild(title);
+        disobj.auction.appendChild(bidder);
+        disobj.auction.appendChild(bid);
+        disobj.auction.appendChild(form);
+        form.appendChild(input);
+        form.appendChild(submit);
         this.render(disobj);
     }, this);
 };
