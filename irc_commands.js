@@ -112,7 +112,16 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     if(prefix == "BidServ") {
         var cleaned = message.replace("\u0001","").replace("\u0002","").replace("\u00034","").replace("\u000F","").replace("\u0016","").replace("\u001D","").replace("\u001F","");
         var parts = cleaned.split(" ");
-        console.debug(cleaned,parts);
+        console.debug(
+            cleaned,
+            parts,
+            parts.slice(0,1).join(" "),
+            parts.slice(0,2).join(" "),
+            ~cleaned.indexOf("has the high bid of"),
+            ~cleaned.indexOf("New highest bid is by"),
+            parts.slice(0,1).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled"),
+            parts[0] == "Sold!"
+        );
         if(parts.slice(0,1).join(" ") == "Starting Auction") {
             var id = parts[4].slice(1,-1);
             var name = parts.slice(5,-4);
