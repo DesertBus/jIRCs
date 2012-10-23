@@ -679,7 +679,7 @@ jIRCs.prototype.renderStatus = function(message) {
         hideauction.onclick = function(e) {
             e.preventDefault();
             disobj.options.show_auction = !disobj.options.show_auction;
-            disobj.userlist.style.display = disobj.options.show_auction ? "block" : "none";
+            disobj.auction.style.display = disobj.options.show_auction ? "block" : "none";
             hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
             self.render(disobj);
         }
