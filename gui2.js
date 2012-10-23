@@ -273,6 +273,8 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
             disobj.messages.appendChild(line.container);
         }, this);
         this.render(disobj);
+        // Scroll to the bottom
+        disobj.messages.scrollTop = disobj.messages.scrollHeight - disobj.messages.clientHeight;
     }
 };
 
