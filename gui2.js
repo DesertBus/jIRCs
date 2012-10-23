@@ -668,17 +668,20 @@ jIRCs.prototype.renderStatus = function(message) {
         special.appendChild(document.createTextNode(" | "));
         special.appendChild(hideauction);
         disobj.status.appendChild(special);
+        var self = this;
         hideulist.onclick = function(e) {
             e.preventDefault();
             disobj.options.show_userlist = !disobj.options.show_userlist;
             disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
             hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
+            self.render(disobj);
         }
         hideauction.onclick = function(e) {
             e.preventDefault();
             disobj.options.show_auction = !disobj.options.show_auction;
             disobj.userlist.style.display = disobj.options.show_auction ? "block" : "none";
             hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+            self.render(disobj);
         }
         this.render(disobj);
     }, this);
