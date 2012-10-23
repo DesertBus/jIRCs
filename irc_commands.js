@@ -25,7 +25,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
     if(prefix != this.nickname) {
         //this.renderLine(channel, channel, prefix + " joined " + channel);
     } else {
-        //this.renderLine(channel, channel, "You have joined " + channel);
+        this.renderLine(channel, channel, "You have joined " + channel);
     }
     if(!this.channels[channel].names) {
         this.channels[channel].names = {};
