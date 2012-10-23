@@ -50,9 +50,12 @@ function jIRCs(conn) {
 
 jIRCs.prototype.version = 'jIRCs 0.1';
 
-jIRCs.prototype.nick = function(nick) {
+jIRCs.prototype.nick = function(nick,pass) {
     this.nickname = nick;
     this.send('CAP',['LS']);
+    if(pass) {
+        this.send('PASS',[pass]);
+    }
     this.send('USER',[nick,nick,nick,':'+nick]);
     this.send('NICK',[nick]);
 };
