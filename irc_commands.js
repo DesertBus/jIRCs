@@ -36,7 +36,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
         this.send('MODE', [channel]); // Get the initial modes because the server doesn't send them by default
     }
     this.forEach(this.displays, function(disobj) {
-        if(document.activeElement == disobj.messagebox && prefix == this.nickname) {
+        if(channel.charAt(0) == "#" && prefix == this.nickname) {
             this.activateChan(channel, disobj);
         }
         if(disobj.viewing == channel) {
