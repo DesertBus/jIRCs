@@ -653,7 +653,33 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
 
 jIRCs.prototype.renderStatus = function(message) {
     this.forEach(this.displays, function(disobj) {
-        disobj.status.innerHTML = message;
+        disobj.status.innerHTML = "";
+        disobj.status.appendChild(document.createTextNode(message));
+        // I'm so sorry
+        var special = document.createElement("span");
+        var hideulist = document.createElement("a");
+        var hideauction = document.createElement("a");
+        special.style.float = "right";
+        hideulist.href = "#";
+        hideauction.href = "#";
+        hideulist.innerHTML = disobj.show_userlist ? "Hide Userlist" : "Show Userlist";
+        hideauction.innerHTML = disobj.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+        special.appendChild(hideulist);
+        special.appendChild(document.createTextNode(" | "));
+        special.appendChild(hideauction);
+        disobj.status.appendChild(special);
+        hideulist.onclick = function(e) {
+            e.preventDefault();
+            disobj.show_userlist = !disobj.show_userlist;
+            disobj.userlist.style.display = disobj.show_userlist ? "block" : "none";
+            hideulist.innerHTML = disobj.show_userlist ? "Hide Userlist" : "Show Userlist";
+        }
+        hideauction.onclick = function(e) {
+            e.preventDefault();
+            disobj.show_auction = !disobj.show_auction;
+            disobj.userlist.style.display = disobj.show_auction ? "block" : "none";
+            hideauction.innerHTML = disobj.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+        }
         this.render(disobj);
     }, this);
 };
