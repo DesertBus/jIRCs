@@ -177,7 +177,7 @@ jIRCs.prototype.measureText = function(text, classname) {
     div.style.width = "auto";
     div.appendChild(document.createTextNode(text));
     document.body.appendChild(div);
-    r = {"height": div.offsetHeight+1, "width": div.offsetWidth+1};
+    r = {"height": div.offsetHeight+2, "width": div.offsetWidth+2};
     document.body.removeChild(div);
     return r;
 };
