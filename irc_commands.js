@@ -124,7 +124,7 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
         );
         if(parts.slice(0,2).join(" ") == "Starting Auction") {
             var id = parts[4].slice(1,-1);
-            var name = parts.slice(5,-4);
+            var name = parts.slice(5,-4).join(" ").slice(1,-1);
             this.auctionStart(id,name);
         } else if(parts.slice(0,3).join(" ") == "Beginning bidding at") {
             var starting = parts[3];
