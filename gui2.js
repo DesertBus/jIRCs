@@ -662,23 +662,23 @@ jIRCs.prototype.renderStatus = function(message) {
         special.style.float = "right";
         hideulist.href = "#";
         hideauction.href = "#";
-        hideulist.innerHTML = disobj.show_userlist ? "Hide Userlist" : "Show Userlist";
-        hideauction.innerHTML = disobj.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+        hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
+        hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
         special.appendChild(hideulist);
         special.appendChild(document.createTextNode(" | "));
         special.appendChild(hideauction);
         disobj.status.appendChild(special);
         hideulist.onclick = function(e) {
             e.preventDefault();
-            disobj.show_userlist = !disobj.show_userlist;
-            disobj.userlist.style.display = disobj.show_userlist ? "block" : "none";
-            hideulist.innerHTML = disobj.show_userlist ? "Hide Userlist" : "Show Userlist";
+            disobj.options.show_userlist = !disobj.options.show_userlist;
+            disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
+            hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
         }
         hideauction.onclick = function(e) {
             e.preventDefault();
-            disobj.show_auction = !disobj.show_auction;
-            disobj.userlist.style.display = disobj.show_auction ? "block" : "none";
-            hideauction.innerHTML = disobj.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+            disobj.options.show_auction = !disobj.options.show_auction;
+            disobj.userlist.style.display = disobj.options.show_auction ? "block" : "none";
+            hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
         }
         this.render(disobj);
     }, this);
