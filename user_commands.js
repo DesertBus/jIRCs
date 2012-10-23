@@ -26,3 +26,9 @@ jIRCs.prototype.command_PART = function(args) {
     var channel = args.shift().toLowerCase();
     this.destroyChan(channel);
 };
+
+jIRCs.prototype.command_BID = function(args, disobj) {
+    var bid = args[0];
+    var smack = ":" + args.slice(1).join(" ");
+    this.SEND('BID',[bid,smack]);
+};

@@ -125,6 +125,25 @@ jIRCs.prototype.display = function(container) {
             input.focus();
         }
     });
+    auction.addEventListener("mouseup", function(e) {
+        if(!auction._hax)
+            return;
+        if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
+            auction._hax.input.focus();
+            e.stopPropagation();
+        }
+        var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
+        if(dx < 0) {
+            dx *= -1;
+        }
+        if(dy < 0) {
+            dy *= -1;
+        }
+        if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
+            auction._hax.input.focus();
+            e.stopPropagation();
+        }
+    });
     form.addEventListener("submit", function(e) {
         self.handleLine(input.value, disobj);
         input.value = '';
