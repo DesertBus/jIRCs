@@ -23,9 +23,9 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
 jIRCs.prototype.irc_JOIN = function(prefix, args) { 
     var channel = args.pop().toLowerCase();
     if(prefix != this.nickname) {
-        this.renderLine(channel, channel, prefix + " joined " + channel);
+        //this.renderLine(channel, channel, prefix + " joined " + channel);
     } else {
-        this.renderLine(channel, channel, "You have joined " + channel);
+        //this.renderLine(channel, channel, "You have joined " + channel);
     }
     if(!this.channels[channel].names) {
         this.channels[channel].names = {};
@@ -51,7 +51,7 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
     if(this.getNick(prefix) == this.nickname) {
         this.destroyChan(channel);
     } else {
-        this.renderLine(channel, channel, prefix + " left " + channel + " [" + reason + "]");
+        //this.renderLine(channel, channel, prefix + " left " + channel + " [" + reason + "]");
         delete(this.channels[channel].names[prefix]);
         this.forEach(this.displays, function(disobj) {
             if(disobj.viewing == channel) {
@@ -68,7 +68,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
             return;
         }
         if(c.names && prefix in c.names) {
-            this.renderLine(channel, channel, prefix + ' quit (' + reason + ')');
+            //this.renderLine(channel, channel, prefix + ' quit (' + reason + ')');
             delete(c.names[prefix]);
         }
     }, this);
