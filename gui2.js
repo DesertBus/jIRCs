@@ -106,10 +106,10 @@ jIRCs.prototype.display = function(container) {
             self.send('JOIN',[e.target.innerHTML]);
             e.preventDefault();
         }
-    });
+    }, false);
     container.addEventListener("mousedown", function(e) {
         disobj.mouse = {'x':e.screenX,'y':e.screenY};
-    });
+    }, false);
     container.addEventListener("mouseup", function(e) {
         if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
             input.focus();
@@ -124,7 +124,7 @@ jIRCs.prototype.display = function(container) {
         if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
             input.focus();
         }
-    });
+    }, false);
     auction.addEventListener("mouseup", function(e) {
         if(!auction._hax)
             return;
@@ -143,12 +143,12 @@ jIRCs.prototype.display = function(container) {
             auction._hax.input.focus();
             e.stopPropagation();
         }
-    });
+    }, false);
     form.addEventListener("submit", function(e) {
         self.handleLine(input.value, disobj);
         input.value = '';
         e.preventDefault();
-    });
+    }, false);
     input.addEventListener("keydown", function(e) {
         var keyCode = e.keyCode || e.which; 
         if(keyCode == 9) {
@@ -187,7 +187,7 @@ jIRCs.prototype.display = function(container) {
             e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
             e.preventDefault();
         }
-    });
+    }, false);
     
     //set up Status window
     this.initChan("Status", disobj);
@@ -204,13 +204,13 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     self = this;
     tab.addEventListener("click", function() {
         self.activateChan(channel, disobj);
-    });
+    }, false);
     if (channel != "Status") {
         var closeBtn = document.createElement("span");
         closeBtn.appendChild(document.createTextNode("X"));
         closeBtn.addEventListener("click", function() {
             self.destroyChan(channel);
-        });
+        }, false);
         closeBtn.className = "jircs_tab_closeBtn";
         tab.appendChild(closeBtn);
     }
@@ -706,7 +706,7 @@ jIRCs.prototype.auctionStart = function(id, name) {
             self.command_BID(input.value.split(" "), disobj);
             input.value = '';
             e.preventDefault();
-        });
+        }, false);
         input.type = "text";
         submit.type = "submit";
         submit.value = "Bid";
