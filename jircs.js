@@ -60,6 +60,11 @@ jIRCs.prototype.nick = function(nick,pass) {
     this.send('NICK',[nick]);
 };
 
+/* Shims */
+if(!String.prototype.trim) {  
+    String.prototype.trim = function () { return this.replace(/^\s+|\s+$/g,''); };  
+}
+
 /* Private interface */
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
