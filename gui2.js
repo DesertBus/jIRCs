@@ -120,6 +120,7 @@ jIRCs.prototype.display = function(container) {
     status_hideauction.href = "#";
     status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
     status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+    auction.style.display = "none";
     auction_input.type = "text";
     auction_submit.type = "submit";
     auction_submit.value = "Bid";
