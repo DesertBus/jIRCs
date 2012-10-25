@@ -19,6 +19,17 @@ jIRCs.prototype.display = function(container) {
     var name = document.createElement('label');
     var input = document.createElement('input');
     var send = document.createElement('input');
+    var status_message = document.createElement("span");
+    var status_special = document.createElement("span");
+    var status_hideulist = document.createElement("a");
+    var status_hideauction = document.createElement("a");
+    var auction_image = document.createElement("img");
+    var auction_title = document.createElement("span");
+    var auction_bidder = document.createElement("span");
+    var auction_bid = document.createElement("span");
+    var auction_form = document.createElement("form");
+    var auction_input = document.createElement("input");
+    var auction_submit = document.createElement("input");
     
     // Save the display object
     var disobj = {
@@ -38,6 +49,17 @@ jIRCs.prototype.display = function(container) {
         'name': name,
         'input': input,
         'send': send,
+        'status_message': status_message,
+        'status_special': status_special,
+        'status_hideulist': status_hideulist,
+        'status_hideauction': status_hideauction,
+        'auction_image': auction_image,
+        'auction_title': auction_title,
+        'auction_bidder': auction_bidder,
+        'auction_bid': auction_bid,
+        'auction_form': auction_form,
+        'auction_input': auction_input,
+        'auction_submit': auction_submit,
         // Vars
         'viewing': '',
         'tabs': {},
@@ -48,6 +70,7 @@ jIRCs.prototype.display = function(container) {
             'show_userlist': true,
             'show_auction': true
         },
+        'auction_running': false,
         'note_timer': false
     };
     
@@ -67,10 +90,16 @@ jIRCs.prototype.display = function(container) {
     name.className = "jircs_name";
     input.className = "jircs_input";
     send.className = "jircs_send";
+    auction_image = "jircs_auction_image";
+    auction_title = "jircs_auction_title";
+    auction_bidder = "jircs_auction_bidder";
+    auction_bid = "jircs_auction_bid";
+    auction_form = "jircs_auction_form";
+    auction_input = "jircs_auction_input";
+    auction_submit = "jircs_auction_submit";
     
     // Set values and styles
     container.style.overflow = "hidden";
-    //window.style.minHeight = "300px";
     chat.style.display = "inline-block";
     userlist.style.display = "inline-block";
     form.style.display = "inline-block";
@@ -82,6 +111,14 @@ jIRCs.prototype.display = function(container) {
     input.type = 'text';
     send.type = "submit";
     send.value = "Send";
+    status_special.style.float = "right";
+    status_hideulist.href = "#";
+    status_hideauction.href = "#";
+    status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
+    status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+    auction_input.type = "text";
+    auction_submit.type = "submit";
+    auction_submit.value = "Bid";
     
     // Attach all those elements together
     container.appendChild(tabbar);
@@ -98,6 +135,18 @@ jIRCs.prototype.display = function(container) {
     form.appendChild(name);
     form.appendChild(input);
     form.appendChild(send);
+    status_special.appendChild(status_hideulist);
+    status_special.appendChild(document.createTextNode(" | "));
+    status_special.appendChild(status_hideauction);
+    status.appendChild(status_message);
+    status.appendChild(status_special);
+    auction.appendChild(auction_image);
+    auction.appendChild(auction_title);
+    auction.appendChild(auction_bidder);
+    auction.appendChild(auction_bid);
+    auction.appendChild(auction_form);
+    auction_form.appendChild(auction_input);
+    auction_form.appendChild(auction_submit);
     
     // Add event listeners
     this.listen(container, "click", this.el_container_click, disobj);
@@ -106,6 +155,9 @@ jIRCs.prototype.display = function(container) {
     this.listen(auction, "mouseup", this.el_auction_mouseup, disobj);
     this.listen(form, "submit", this.el_form_submit, disobj);
     this.listen(input, "keydown", this.el_input_keydown, disobj);
+    this.listen(status_hideulist, "click", this.el_hideulist_click, disobj);
+    this.listen(status_hideauction, "click", this.el_hideauction_click, disobj);
+    this.listen(auction_form, "submit", this.el_auction_form_submit, disobj);
     
     //set up Status window
     this.initChan("Status", disobj);
@@ -119,7 +171,6 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     tab.style.position = "relative";
     tab.style.overflow = "hidden";
     tab.appendChild(document.createTextNode(channel));
-    self = this;
     this.listen(tab, "click", function(e, disobj) {
         this.activateChan(channel, disobj);
     }, disobj);
@@ -573,93 +624,39 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
 
 jIRCs.prototype.renderStatus = function(message) {
     this.forEach(this.displays, function(disobj) {
-        disobj.status.innerHTML = "";
-        disobj.status.appendChild(document.createTextNode(message));
-        // I'm so sorry
-        var special = document.createElement("span");
-        var hideulist = document.createElement("a");
-        var hideauction = document.createElement("a");
-        special.style.float = "right";
-        hideulist.href = "#";
-        hideauction.href = "#";
-        hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
-        hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
-        special.appendChild(hideulist);
-        special.appendChild(document.createTextNode(" | "));
-        special.appendChild(hideauction);
-        disobj.status.appendChild(special);
-        var self = this;
-        hideulist.onclick = function(e) {
-            e.preventDefault();
-            disobj.options.show_userlist = !disobj.options.show_userlist;
-            disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
-            hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
-            self.render(disobj);
-        }
-        hideauction.onclick = function(e) {
-            e.preventDefault();
-            disobj.options.show_auction = !disobj.options.show_auction;
-            disobj.auction.style.display = disobj.options.show_auction ? "block" : "none";
-            hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
-            self.render(disobj);
-        }
+        disobj.status.message.innerHTML = "";
+        disobj.status.message.appendChild(document.createTextNode(message));
         this.render(disobj);
     }, this);
 };
 
 jIRCs.prototype.auctionStart = function(id, name) {
     this.forEach(this.displays, function(disobj) {
-        disobj.auction.innerHTML = "";
-        var self = this;
-        var image = document.createElement("img");
-        var title = document.createElement("span");
-        var bidder = document.createElement("span");
-        var bid = document.createElement("span");
-        var form = document.createElement("form");
-        var input = document.createElement("input");
-        var submit = document.createElement("input");
-        image.src = "http://desertbus.org/thumbs/irc/"+id+".png";
-        title.appendChild(document.createTextNode(name));
-        this.listen(form, "submit", this.el_auction_form_submit, disobj);
-        input.type = "text";
-        submit.type = "submit";
-        submit.value = "Bid";
-        disobj.auction._hax = {
-            "image": image,
-            "title": title,
-            "bidder": bidder,
-            "bid": bid,
-            "form": form,
-            "input": input,
-            "submit": submit
-        };
-        disobj.auction.appendChild(image);
-        disobj.auction.appendChild(title);
-        disobj.auction.appendChild(bidder);
-        disobj.auction.appendChild(bid);
-        disobj.auction.appendChild(form);
-        form.appendChild(input);
-        form.appendChild(submit);
+        disobj.auction_running = true;
+        if(disobj.options.show_auction) {
+            disobj.auction.style.display = "block";
+        }
+        disobj.auction_image.src = "http://desertbus.org/thumbs/irc/"+id+".png";
+        disobj.auction_title.innerHTML = "";
+        disobj.auction_title.appendChild(document.createTextNode(name));
         this.render(disobj);
     }, this);
 };
 
 jIRCs.prototype.auctionBid = function(bid, bidder) {
     this.forEach(this.displays, function(disobj) {
-        if(!disobj.auction._hax)
-            return;
-        disobj.auction._hax.bid.innerHTML = "";
-        disobj.auction._hax.bidder.innerHTML = "";
-        disobj.auction._hax.bid.appendChild(document.createTextNode(bid));
-        disobj.auction._hax.bidder.appendChild(document.createTextNode(bidder));
+        disobj.auction_bid.innerHTML = "";
+        disobj.auction_bidder.innerHTML = "";
+        disobj.auction_bid.appendChild(document.createTextNode(bid));
+        disobj.auction_bidder.appendChild(document.createTextNode(bidder));
         this.render(disobj);
     }, this);
 };
 
 jIRCs.prototype.auctionStop = function() {
     this.forEach(this.displays, function(disobj) {
-        disobj.auction.innerHTML = "";
-        disobj.auction._hax = false;
+        disobj.auction_running = false;
+        disobj.auction.style.display = "none";
         this.render(disobj);
     }, this);
 };
@@ -693,10 +690,8 @@ jIRCs.prototype.el_container_mouseup = function(disobj, e) {
 };
 
 jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
-    if(!disobj.auction._hax)
-        return;
     if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
-        disobj.auction._hax.input.focus();
+        disobj.auction_input.focus();
         e.stopPropagation();
     }
     var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
@@ -707,7 +702,7 @@ jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
         dy *= -1;
     }
     if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
-        disobj.auction._hax.input.focus();
+        disobj.auction_input.focus();
         e.stopPropagation();
     }
 };
@@ -758,8 +753,24 @@ jIRCs.prototype.el_input_keydown = function(disobj, e) {
     }
 };
 
+jIRCs.prototype.el_hideulist_click = function(disobj, e) {
+    e.preventDefault();
+    disobj.options.show_userlist = !disobj.options.show_userlist;
+    disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
+    disobj.status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
+    this.render(disobj);
+};
+
+jIRCs.prototype.el_hideauction_click = function(disobj, e) {
+    e.preventDefault();
+    disobj.options.show_auction = !disobj.options.show_auction;
+    disobj.auction.style.display = disobj.options.show_auction && disobj.auction_running ? "block" : "none";
+    disobj.status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+    self.render(disobj);
+};
+
 jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
-    this.command_BID(disobj.auction._hax.input.value.split(" "), disobj);
-    disobj.auction._hax.input.value = '';
+    this.command_BID(disobj.auction_input.value.split(" "), disobj);
+    disobj.auction_input.value = '';
     e.preventDefault();
 };
