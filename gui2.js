@@ -379,7 +379,7 @@ jIRCs.prototype.render = function(disobj) {
     }, this);
     // If it turns out we don't need scrollbars, fill in the extra space
     if(mesh < disobj.messages.clientHeight) {
-        mesw = disobj.messages.clientWidth - timew - namew - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
+        mesw = disobj.messages.clientWidth - timew - namew - 2 - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
         this.forEach(disobj.lines[disobj.viewing], function(line) {
             line.message.style.width = mesw + "px";
         }, this);
