@@ -628,8 +628,8 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
 
 jIRCs.prototype.renderStatus = function(message) {
     this.forEach(this.displays, function(disobj) {
-        disobj.status.message.innerHTML = "";
-        disobj.status.message.appendChild(document.createTextNode(message));
+        disobj.status_message.innerHTML = "";
+        disobj.status_message.appendChild(document.createTextNode(message));
         this.render(disobj);
     }, this);
 };
