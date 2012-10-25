@@ -370,7 +370,7 @@ jIRCs.prototype.render = function(disobj) {
         namew = Math.max(dim["width"], namew);
     }, this);
     // Assume we need scrollbars
-    mesw = disobj.messages.clientWidth - timew - namew - 20 - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
+    mesw = disobj.messages.clientWidth - timew - namew - 22 - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
     this.forEach(disobj.lines[disobj.viewing], function(line) {
         line.time.style.width = timew + "px";
         line.name.style.width = namew + "px";
