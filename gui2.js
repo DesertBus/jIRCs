@@ -100,94 +100,12 @@ jIRCs.prototype.display = function(container) {
     form.appendChild(send);
     
     // Add event listeners
-    self = this;
-    container.addEventListener("click", function(e) {
-        if(e.target && e.target.className == 'jircs_channel_link') {
-            self.send('JOIN',[e.target.innerHTML]);
-            e.preventDefault();
-        }
-    }, false);
-    container.addEventListener("mousedown", function(e) {
-        disobj.mouse = {'x':e.screenX,'y':e.screenY};
-    }, false);
-    container.addEventListener("mouseup", function(e) {
-        if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
-            input.focus();
-        }
-        var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
-        if(dx < 0) {
-            dx *= -1;
-        }
-        if(dy < 0) {
-            dy *= -1;
-        }
-        if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
-            input.focus();
-        }
-    }, false);
-    auction.addEventListener("mouseup", function(e) {
-        if(!auction._hax)
-            return;
-        if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
-            auction._hax.input.focus();
-            e.stopPropagation();
-        }
-        var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
-        if(dx < 0) {
-            dx *= -1;
-        }
-        if(dy < 0) {
-            dy *= -1;
-        }
-        if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
-            auction._hax.input.focus();
-            e.stopPropagation();
-        }
-    }, false);
-    form.addEventListener("submit", function(e) {
-        self.handleLine(input.value, disobj);
-        input.value = '';
-        e.preventDefault();
-    }, false);
-    input.addEventListener("keydown", function(e) {
-        var keyCode = e.keyCode || e.which; 
-        if(keyCode == 9) {
-            // Get cursor position
-            var cursor = 0;
-            if (e.target.createTextRange) {
-                var r = document.selection.createRange().duplicate();
-                r.moveEnd('character', e.target.value.length);
-                if (r.text == '') {
-                    cursor = e.target.value.length;
-                }
-                cursor = e.target.value.lastIndexOf(r.text);
-            } else {
-                cursor = e.target.selectionStart;
-            }
-            var begin = e.target.value.lastIndexOf(' ',cursor) + 1;
-            var end = e.target.value.indexOf(' ',cursor);
-            if(end == -1) {
-                end = e.target.value.length;
-            }
-            var name = e.target.value.substring(begin,end);
-            var possible = [];
-            // Complete the name
-            self.forEach(self.channels[disobj.viewing].names, function(status, n) {
-                if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
-                    possible.push(n);
-                }
-            }, self);
-            if(possible.length == 1) {
-                name = possible[0];
-            } else if(possible.length == 0) {
-                self.renderNotification('No Possible Nicknames', disobj);
-            } else {
-                self.renderNotification('Possible Nicknames: '+possible.join(' '), disobj);
-            }
-            e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
-            e.preventDefault();
-        }
-    }, false);
+    container.addEventListener("click", this.el_container_click.bind(this, disobj), false);
+    container.addEventListener("mousedown", this.el_container_mousedown.bind(this, disobj), false);
+    container.addEventListener("mouseup", this.el_container_mouseup.bind(this, disobj), false);
+    auction.addEventListener("mouseup", this.el_auction_mouseup.bind(this, disobj), false);
+    form.addEventListener("submit", this.el_form_submit.bind(this, disobj), false);
+    input.addEventListener("keydown", this.el_input_keydown.bind(this, disobj), false);
     
     //set up Status window
     this.initChan("Status", disobj);
@@ -750,3 +668,96 @@ jIRCs.prototype.auctionStop = function() {
     }, this);
 };
 
+// Event Listeners
+jIRCs.prototype.el_container_click = function(disobj, e) {
+    if(e.target && e.target.className == 'jircs_channel_link') {
+        this.send('JOIN',[e.target.innerHTML]);
+        e.preventDefault();
+    }
+};
+
+jIRCs.prototype.el_container_mousedown = function(disobj, e) {
+    disobj.mouse = {'x':e.screenX,'y':e.screenY};
+};
+
+jIRCs.prototype.el_container_mouseup = function(disobj, e) {
+    if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
+        disobj.input.focus();
+    }
+    var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
+    if(dx < 0) {
+        dx *= -1;
+    }
+    if(dy < 0) {
+        dy *= -1;
+    }
+    if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
+        disobj.input.focus();
+    }
+};
+
+jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
+    if(!disobj.auction._hax)
+        return;
+    if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
+        disobj.auction._hax.input.focus();
+        e.stopPropagation();
+    }
+    var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
+    if(dx < 0) {
+        dx *= -1;
+    }
+    if(dy < 0) {
+        dy *= -1;
+    }
+    if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
+        disobj.auction._hax.input.focus();
+        e.stopPropagation();
+    }
+};
+
+jIRCs.prototype.el_form_submit = function(disobj, e) {
+    e.preventDefault();
+    this.handleLine(disobj.input.value, disobj);
+    disobj.input.value = '';
+};
+
+jIRCs.prototype.el_input_keydown = function(disobj, e) {
+    var keyCode = e.keyCode || e.which; 
+    if(keyCode == 9) {
+        // Get cursor position
+        var cursor = 0;
+        if (e.target.createTextRange) {
+            var r = document.selection.createRange().duplicate();
+            r.moveEnd('character', e.target.value.length);
+            if (r.text == '') {
+                cursor = e.target.value.length;
+            }
+            cursor = e.target.value.lastIndexOf(r.text);
+        } else {
+            cursor = e.target.selectionStart;
+        }
+        var begin = e.target.value.lastIndexOf(' ',cursor) + 1;
+        var end = e.target.value.indexOf(' ',cursor);
+        if(end == -1) {
+            end = e.target.value.length;
+        }
+        var name = e.target.value.substring(begin,end);
+        var possible = [];
+        // Complete the name
+        this.forEach(this.channels[disobj.viewing].names, function(status, n) {
+            if(n.substring(0,name.length).toLowerCase() == name.toLowerCase()) {
+                possible.push(n);
+            }
+        }, this);
+        if(possible.length == 1) {
+            name = possible[0];
+        } else if(possible.length == 0) {
+            this.renderNotification('No Possible Nicknames', disobj);
+        } else {
+            this.renderNotification('Possible Nicknames: '+possible.join(' '), disobj);
+        }
+        e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
+        e.preventDefault();
+    }
+};
