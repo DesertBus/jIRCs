@@ -399,7 +399,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     var widths = {
         "time": this.measureText(date.textContent || date.innerText, date.className).width,
         "name": this.measureText(user.textContent || user.innerText, user.className).width,
-        "message": this.measureText(text.textContent || text.innerText, text.className).width,
+        "message": this.measureText(text.textContent || text.innerText, text.className).width
     };
     if(!(channel in this.channels)) {
         this.channels[channel] = {} // Add a new object in which we can store channel data
