@@ -670,7 +670,7 @@ jIRCs.prototype.auctionStop = function() {
 jIRCs.prototype.el_container_click = function(disobj, e) {
     if(e.target && e.target.className == 'jircs_channel_link') {
         this.send('JOIN',[e.target.innerHTML]);
-        e.preventDefault();
+        this.cancelEvent(e);
     }
 };
 
@@ -713,7 +713,7 @@ jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
 };
 
 jIRCs.prototype.el_form_submit = function(disobj, e) {
-    e.preventDefault();
+    this.cancelEvent(e);
     this.handleLine(disobj.input.value, disobj);
     disobj.input.value = '';
 };
@@ -754,12 +754,12 @@ jIRCs.prototype.el_input_keydown = function(disobj, e) {
             this.renderNotification('Possible Nicknames: '+possible.join(' '), disobj);
         }
         e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
-        e.preventDefault();
+        this.cancelEvent(e);
     }
 };
 
 jIRCs.prototype.el_hideulist_click = function(disobj, e) {
-    e.preventDefault();
+    this.cancelEvent(e);
     disobj.options.show_userlist = !disobj.options.show_userlist;
     disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
     disobj.status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
@@ -767,7 +767,7 @@ jIRCs.prototype.el_hideulist_click = function(disobj, e) {
 };
 
 jIRCs.prototype.el_hideauction_click = function(disobj, e) {
-    e.preventDefault();
+    this.cancelEvent(e);
     disobj.options.show_auction = !disobj.options.show_auction;
     disobj.auction.style.display = disobj.options.show_auction && disobj.auction_running ? "block" : "none";
     disobj.status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
@@ -777,5 +777,5 @@ jIRCs.prototype.el_hideauction_click = function(disobj, e) {
 jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
     this.command_BID(disobj.auction_input.value.split(" "), disobj);
     disobj.auction_input.value = '';
-    e.preventDefault();
+    this.cancelEvent(e);
 };

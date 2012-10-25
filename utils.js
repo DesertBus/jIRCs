@@ -191,3 +191,12 @@ jIRCs.prototype.listen = function(element, event, func, disobj) {
         element["on"+event] = func.bind(this, disobj); // Will this work? I HAVE NO IDEA!!
     }
 };
+
+jIRCs.prototype.cancelEvent = function(e) {
+    if(e.preventDefault){  
+        e.preventDefault();  
+    }else{  
+        e.returnValue = false;  
+        e.cancelBubble=true;  
+    }
+};
