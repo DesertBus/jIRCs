@@ -441,7 +441,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             "container": r,
             "time": d,
             "name": u,
-            "message": t,
+            "message": t
         });
         while(disobj.lines[channel].length > this.scrollbackSize) {
             disobj.lines[channel].shift();
