@@ -27,6 +27,11 @@ jIRCs.prototype.command_PART = function(args) {
     this.destroyChan(channel);
 };
 
+jIRCs.prototype.command_QUIT = function(args) {
+    var reason = ":"+args.join(" ");
+    this.send('QUIT',[reason]);
+};
+
 jIRCs.prototype.command_BID = function(args, disobj) {
     var bid = args[0];
     var smack = ":" + args.slice(1).join(" ");
