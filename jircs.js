@@ -51,6 +51,7 @@ function jIRCs(conn) {
 jIRCs.prototype.version = 'jIRCs 0.1';
 
 jIRCs.prototype.nick = function(nick,pass) {
+    nick = nick.replace(/[^\w-]/,"");
     this.nickname = nick;
     this.send('CAP',['LS']);
     if(pass) {
