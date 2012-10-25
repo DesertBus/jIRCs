@@ -90,13 +90,17 @@ jIRCs.prototype.display = function(container) {
     name.className = "jircs_name";
     input.className = "jircs_input";
     send.className = "jircs_send";
-    auction_image = "jircs_auction_image";
-    auction_title = "jircs_auction_title";
-    auction_bidder = "jircs_auction_bidder";
-    auction_bid = "jircs_auction_bid";
-    auction_form = "jircs_auction_form";
-    auction_input = "jircs_auction_input";
-    auction_submit = "jircs_auction_submit";
+    status_message.className = "jircs_status_message";
+    status_special.className = "jircs_status_special";
+    status_hideulist.className = "jircs_status_hideulist";
+    status_hideauction.className = "jircs_status_hideauction";
+    auction_image.className = "jircs_auction_image";
+    auction_title.className = "jircs_auction_title";
+    auction_bidder.className = "jircs_auction_bidder";
+    auction_bid.className = "jircs_auction_bid";
+    auction_form.className = "jircs_auction_form";
+    auction_input.className = "jircs_auction_input";
+    auction_submit.className = "jircs_auction_submit";
     
     // Set values and styles
     container.style.overflow = "hidden";
