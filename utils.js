@@ -181,3 +181,13 @@ jIRCs.prototype.measureText = function(text, classname) {
     document.body.removeChild(div);
     return r;
 };
+
+jIRCs.prototype.listen = function(element, event, func, disobj) {
+    if (element.addEventListener) {
+        element.addEventListener(event, func.bind(this, disobj), false); 
+    } else if (element.attachEvent)  {
+        element.attachEvent("on"+event, func.bind(this, disobj));
+    } else {
+        element["on"+event] = func.bind(this, disobj); // Will this work? I HAVE NO IDEA!!
+    }
+};

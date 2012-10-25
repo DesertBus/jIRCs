@@ -100,12 +100,12 @@ jIRCs.prototype.display = function(container) {
     form.appendChild(send);
     
     // Add event listeners
-    container.addEventListener("click", this.el_container_click.bind(this, disobj), false);
-    container.addEventListener("mousedown", this.el_container_mousedown.bind(this, disobj), false);
-    container.addEventListener("mouseup", this.el_container_mouseup.bind(this, disobj), false);
-    auction.addEventListener("mouseup", this.el_auction_mouseup.bind(this, disobj), false);
-    form.addEventListener("submit", this.el_form_submit.bind(this, disobj), false);
-    input.addEventListener("keydown", this.el_input_keydown.bind(this, disobj), false);
+    this.listen(container, "click", this.el_container_click, disobj);
+    this.listen(container, "mousedown", this.el_container_mousedown, disobj);
+    this.listen(container, "mouseup", this.el_container_mouseup, disobj);
+    this.listen(auction, "mouseup", this.el_auction_mouseup, disobj);
+    this.listen(form, "submit", this.el_form_submit, disobj);
+    this.listen(input, "keydown", this.el_input_keydown, disobj);
     
     //set up Status window
     this.initChan("Status", disobj);
@@ -120,15 +120,15 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     tab.style.overflow = "hidden";
     tab.appendChild(document.createTextNode(channel));
     self = this;
-    tab.addEventListener("click", function() {
-        self.activateChan(channel, disobj);
-    }, false);
+    this.listen(tab, "click", function(e, disobj) {
+        this.activateChan(channel, disobj);
+    }, disobj);
     if (channel != "Status") {
         var closeBtn = document.createElement("span");
         closeBtn.appendChild(document.createTextNode("X"));
-        closeBtn.addEventListener("click", function() {
-            self.destroyChan(channel);
-        }, false);
+        this.listen(closeBtn, "click", function(e, disobj) {
+            this.destroyChan(channel);
+        }, disobj);
         closeBtn.className = "jircs_tab_closeBtn";
         tab.appendChild(closeBtn);
     }
@@ -620,11 +620,7 @@ jIRCs.prototype.auctionStart = function(id, name) {
         var submit = document.createElement("input");
         image.src = "http://desertbus.org/thumbs/irc/"+id+".png";
         title.appendChild(document.createTextNode(name));
-        form.addEventListener("submit", function(e) {
-            self.command_BID(input.value.split(" "), disobj);
-            input.value = '';
-            e.preventDefault();
-        }, false);
+        this.listen(form, "submit", this.el_auction_form_submit, disobj);
         input.type = "text";
         submit.type = "submit";
         submit.value = "Bid";
@@ -760,4 +756,10 @@ jIRCs.prototype.el_input_keydown = function(disobj, e) {
         e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
         e.preventDefault();
     }
+};
+
+jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
+    this.command_BID(disobj.auction._hax.input.value.split(" "), disobj);
+    disobj.auction._hax.input.value = '';
+    e.preventDefault();
 };
