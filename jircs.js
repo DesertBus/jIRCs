@@ -51,7 +51,12 @@ function jIRCs(conn) {
 jIRCs.prototype.version = 'jIRCs 0.1';
 
 jIRCs.prototype.nick = function(nick,pass) {
-    nick = nick.replace(/[^\w-]/,"");
+    while(!this.nick_regex.test(nick) && nick) {
+        nick = nick.slice(0,-1);
+    }
+    if(!nick) {
+        nick = "Guest" + Math.floor(Math.random()*9000000 + 1000000);
+    }
     this.nickname = nick;
     this.send('CAP',['LS']);
     if(pass) {
@@ -62,6 +67,10 @@ jIRCs.prototype.nick = function(nick,pass) {
 };
 
 /* Shims */
+if(!window.console) {
+    window.console = {log: function() {}};
+}
+
 if(!String.prototype.trim) {  
     String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g,''); };  
 }

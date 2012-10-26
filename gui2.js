@@ -393,7 +393,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     date.appendChild(document.createTextNode('[' + (h.length > 1 ? h : '0'+h) + ':' + (m.length > 1 ? m : '0'+m) + ':' + (s.length > 1 ? s : '0'+s) + ']'));
     user.appendChild(document.createTextNode("\u00A0"+speaker+"\u00A0")); // \u00A0 = non-breaking space
     text.appendChild(document.createTextNode(message));
-    var nickCheck = new RegExp("\\b"+this.nickname+"\\b");
+    var nickCheck = new RegExp("\\b" + this.cleanRegex(this.nickname) + "\\b");
     text.innerHTML = this.formatLine(text.innerHTML);
     var widths = {
         "time": this.measureText(date.textContent || date.innerText, date.className).width,
@@ -696,7 +696,7 @@ jIRCs.prototype.el_container_mouseup = function(disobj, e) {
 jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
     if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
         disobj.auction_input.focus();
-        e.stopPropagation();
+        this.cancelEvent(e);
     }
     var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
     if(dx < 0) {
@@ -707,12 +707,14 @@ jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
     }
     if(dx < 5 && dy < 5 && e.button == 0) { //Make sure text selection works as expected 
         disobj.auction_input.focus();
-        e.stopPropagation();
+        this.cancelEvent(e);
     }
 };
 
 jIRCs.prototype.el_form_submit = function(disobj, e) {
     this.cancelEvent(e);
+    if(!disobj.input.value)
+        return;
     this.handleLine(disobj.input.value, disobj);
     disobj.input.value = '';
 };
@@ -782,7 +784,9 @@ jIRCs.prototype.el_hideauction_click = function(disobj, e) {
 };
 
 jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
+    this.cancelEvent(e);
+    if(!disobj.auction_input.value)
+        return;
     this.command_BID(disobj.auction_input.value.split(" "), disobj);
     disobj.auction_input.value = '';
-    this.cancelEvent(e);
 };
