@@ -755,11 +755,11 @@ jIRCs.prototype.el_input_keydown = function(disobj, e) {
 };
 
 jIRCs.prototype.el_tab_click = function(disobj, e) {
-    this.activateChan(e.target.textContent || e.target.innerText, disobj);
+    this.activateChan(e.target.firstChild.textContent || e.target.firstChild.innerText, disobj);
 };
 
 jIRCs.prototype.el_closebtn_click = function(disobj, e) {
-    this.destroyChan(e.target.textContent || e.target.innerText);
+    this.destroyChan(e.target.parentNode.firstChild.textContent || e.target.parentNode.firstChild.innerText);
 };
 
 jIRCs.prototype.el_hideulist_click = function(disobj, e) {
