@@ -184,7 +184,6 @@ jIRCs.prototype.measureText = function(text, classname) {
 
 jIRCs.prototype.listen = function(element, event, func, disobj) {
     var f = this.fixEvent.bind(this, func.bind(this, disobj));
-    var f = 
     if (element.addEventListener) {
         element.addEventListener(event, f, false); 
     } else if (element.attachEvent)  {
