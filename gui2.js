@@ -176,15 +176,11 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     tab.style.position = "relative";
     tab.style.overflow = "hidden";
     tab.appendChild(document.createTextNode(channel));
-    this.listen(tab, "click", function(e, disobj) {
-        this.activateChan(channel, disobj);
-    }, disobj);
+    this.listen(tab, "click", this.el_tab_click, disobj);
     if (channel != "Status") {
         var closeBtn = document.createElement("span");
         closeBtn.appendChild(document.createTextNode("X"));
-        this.listen(closeBtn, "click", function(e, disobj) {
-            this.destroyChan(channel);
-        }, disobj);
+        this.listen(closeBtn, "click", this.el_closebtn_click, disobj);
         closeBtn.className = "jircs_tab_closeBtn";
         tab.appendChild(closeBtn);
     }
@@ -756,6 +752,14 @@ jIRCs.prototype.el_input_keydown = function(disobj, e) {
         e.target.value = e.target.value.substring(0,begin) + name + e.target.value.substr(end);
         this.cancelEvent(e);
     }
+};
+
+jIRCs.prototype.el_tab_click = function(disobj, e) {
+    this.activateChan(e.target.textContent || e.target.innerText, disobj);
+};
+
+jIRCs.prototype.el_closebtn_click = function(disobj, e) {
+    this.destroyChan(e.target.textContent || e.target.innerText);
 };
 
 jIRCs.prototype.el_hideulist_click = function(disobj, e) {
