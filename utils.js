@@ -183,18 +183,21 @@ jIRCs.prototype.measureText = function(text, classname) {
 };
 
 jIRCs.prototype.listen = function(element, event, func, disobj) {
-    func = function(e) {
-        e = e || window.event;
-        e.target = e.target || e.srcElement;
-        func.bind(this, disobj)(e);
-    }
+    var f = this.fixEvent.bind(this, func.bind(this, disobj));
+    var f = 
     if (element.addEventListener) {
-        element.addEventListener(event, func, false); 
+        element.addEventListener(event, f, false); 
     } else if (element.attachEvent)  {
-        element.attachEvent("on"+event, func);
+        element.attachEvent("on"+event, f);
     } else {
-        element["on"+event] = func; // Will this work? I HAVE NO IDEA!!
+        element["on"+event] = f; // Will this work? I HAVE NO IDEA!!
     }
+};
+
+jIRCs.prototype.fixEvent = function(func, e) {
+    e = e || window.event;
+    e.target = e.target || e.srcElement;
+    func(e);
 };
 
 jIRCs.prototype.cancelEvent = function(e) {
