@@ -215,6 +215,6 @@ jIRCs.prototype.calculateScrollWidth = function() {
     div.style.overflow = "scroll";
     document.body.appendChild(div);
     var w = div.offsetWidth - div.clientWidth;
-    document.body.removeChild(scrollDiv);
+    document.body.removeChild(div);
     return w;
 };
