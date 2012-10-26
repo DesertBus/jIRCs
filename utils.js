@@ -207,3 +207,14 @@ jIRCs.prototype.cancelEvent = function(e) {
         e.cancelBubble=true;  
     }
 };
+
+jIRCs.prototype.calculateScrollWidth = function() {
+    var div = document.createElement("div");
+    div.style.width = "100px";
+    div.style.height = "100px";
+    div.style.overflow = "scroll";
+    document.body.appendChild(div);
+    var w = div.offsetWidth - div.clientWidth;
+    document.body.removeChild(scrollDiv);
+    return w;
+};

@@ -41,6 +41,7 @@ function jIRCs(conn) {
     this.scrollbackSize = 500;
     this.nickname = '';
     this.registered = false;
+    this.scrollWidth = this.calculateScrollWidth();
     this.conn = conn;
     this.conn.parent = this;
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
