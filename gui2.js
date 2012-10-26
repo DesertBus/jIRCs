@@ -322,9 +322,9 @@ jIRCs.prototype.render = function(disobj) {
     componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
     disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
     if(ulisth > disobj.window.clientHeight) {
-        disobj.userlist.style.width = (ulistw + 20) + 'px';
+        disobj.userlist.style.width = (ulistw + 4 + this.calculateScrollWidth()) + 'px';
     } else {
-        disobj.userlist.style.width = ulistw + 'px';
+        disobj.userlist.style.width = (ulistw + 4) + 'px';
     }
     disobj.userlist.style.height = disobj.window.clientHeight + "px";
     disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth) + "px";
@@ -340,7 +340,7 @@ jIRCs.prototype.render = function(disobj) {
         namew = Math.max(dim["width"], namew);
     }, this);
     // Assume we need scrollbars
-    mesw = disobj.messages.clientWidth - timew - namew - 4 - this.scrollWidth - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
+    mesw = disobj.messages.clientWidth - timew - namew - 4 - this.calculateScrollWidth() - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
     this.forEach(disobj.lines[disobj.viewing], function(line) {
         line.time.style.width = timew + "px";
         line.name.style.width = namew + "px";
