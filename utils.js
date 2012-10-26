@@ -55,6 +55,8 @@ jIRCs.prototype.parseMessage = function(s) {
     console.log("<<< " + method + "('" + p + "'," + JSON.stringify(args) + ")");
     if(method in this) {
         this[method](p, args);
+    } else {
+        this.irc_unknown(p, args);
     }
 };
 

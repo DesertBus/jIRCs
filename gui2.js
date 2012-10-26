@@ -175,6 +175,7 @@ jIRCs.prototype.initChan = function(channel, disobj) {
     tab.className = "jircs_tab";
     tab.style.position = "relative";
     tab.style.overflow = "hidden";
+    tab.style.cursor = "pointer";
     tab.appendChild(document.createTextNode(channel));
     this.listen(tab, "click", this.el_tab_click, disobj);
     if (channel != "Status") {

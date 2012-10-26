@@ -324,3 +324,7 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
         }
     }, this);
 };
+
+jIRCs.prototype.irc_unknown = function(prefix, args) {
+    this.renderLine("Status", prefix, args.join(" "));
+};
