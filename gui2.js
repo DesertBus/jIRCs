@@ -319,7 +319,7 @@ jIRCs.prototype.render = function(disobj) {
     disobj.name.innerHTML = "";
     disobj.name.appendChild(document.createTextNode(this.nickname+"\u00A0")); // \u00A0 = non-breaking space
     disobj.input.style.width = "0px";
-    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth) + "px";
+    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth - fudgeFactor) + "px";
     // Fix all the heights
     disobj.window.style.height = "0px";
     componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
