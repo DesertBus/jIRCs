@@ -224,5 +224,5 @@ jIRCs.prototype.calculateScrollWidth = function() {
 };
 
 jIRCs.prototype.cleanRegex = function(str) {
-    return str.replace(this.regex_regex,"\\$1");
+    return str.replace(this.regex_regex,"\\$&");
 };
