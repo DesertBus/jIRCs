@@ -832,6 +832,9 @@ jIRCs.prototype.el_userentry_click = function(disobj, e) {
     var nick = e.target.firstChild.nodeValue.toLowerCase();
     if(nick.charAt(0) in this.statusSymbols)
         nick = nick.substr(1);
+    if(!(nick in this.channels)) {
+        this.channels[nick] = {} // Add a new object in which we can store channel data
+    }
     this.initChan(nick, disobj);
     this.activateChan(nick, disobj);
 };
