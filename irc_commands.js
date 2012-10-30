@@ -169,9 +169,9 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
         }, this);
     }
     if(this.getNick(prefix) == "NickServ") {
-        if(message.slice(0,34) == "You are now identified. Welcome, ") {
-            this.setAccount(message.slice(34,-1));
-        } else if(message.slice(0,22) == "You are now logged out") {
+        if(message.slice(0,33) == "You are now identified. Welcome, ") {
+            this.setAccount(message.slice(33,-1));
+        } else if(message.slice(0,21) == "You are now logged out") {
             this.setAccount(false);
         }
     }
