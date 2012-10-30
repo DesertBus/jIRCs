@@ -338,5 +338,7 @@ jIRCs.prototype.irc_433 = function(prefix, args) {
 };
 
 jIRCs.prototype.irc_unknown = function(prefix, args) {
+    if(args[0] == this.nickname)
+        args.shift();
     this.renderLine("Status", prefix, args.join(" "));
 };
