@@ -321,6 +321,8 @@ jIRCs.prototype.render = function(disobj) {
             this.forEach(ulist, function(u) {
                 var p = document.createElement('p');
                 p.style.margin = "0";
+                p.style.cursor = "pointer";
+                this.listen(p, "click", this.el_userentry_click, disobj);
                 p.appendChild(document.createTextNode(u));
                 p.className = 'jircs_userlist_user';
                 disobj.userlist.appendChild(p);
@@ -823,4 +825,12 @@ jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
         return;
     this.command_BID(disobj.auction_input.value.split(" "), disobj);
     disobj.auction_input.value = '';
+};
+
+jIRCs.prototype.el_userentry_click = function(disobj, e) {
+    var nick = e.target.firstChild.nodeValue;
+    if(nick.charAt(0) in this.statusSymbols)
+        nick = nick.substr(1);
+    this.initChan(nick, disobj);
+    this.activateChan(nick, disobj);
 };
