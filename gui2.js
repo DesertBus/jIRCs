@@ -478,6 +478,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
                 this.render(disobj); // Brute-force dimensions into submission
             }
         }
+        disobj.widths[disobj.viewing].height += r.offsetHeight; // Gotta keep it real
         if(b) {
             disobj.messages.scrollTop = disobj.messages.scrollHeight - disobj.messages.clientHeight; // Only scroll when user is at the bottom
         }
