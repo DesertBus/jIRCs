@@ -27,6 +27,7 @@ if($_SESSION['user']) {
         <script src="irc_commands.js"></script>
         <script src="user_commands.js"></script>
         <script src="ctcp_commands.js"></script>
+        <style>html, body, #jircs { height: 100%; width: 100%; margin: 0; }</style>
     </head>
     <body> 
         <div id="jircs">
