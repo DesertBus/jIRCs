@@ -19,7 +19,9 @@ jIRCs.prototype.display = function(container) {
     var name = document.createElement('label');
     var input = document.createElement('input');
     var send = document.createElement('input');
-    var status_message = document.createElement("span");
+    var status_normal = document.createElement("span");
+    var status_connected = document.createElement("span");
+    var status_account = document.createElement("span");
     var status_special = document.createElement("span");
     var status_hideulist = document.createElement("a");
     var status_hideauction = document.createElement("a");
@@ -49,7 +51,9 @@ jIRCs.prototype.display = function(container) {
         'name': name,
         'input': input,
         'send': send,
-        'status_message': status_message,
+        'status_normal': status_normal,
+        'status_connected': status_connected,
+        'status_account': status_account,
         'status_special': status_special,
         'status_hideulist': status_hideulist,
         'status_hideauction': status_hideauction,
@@ -90,7 +94,9 @@ jIRCs.prototype.display = function(container) {
     name.className = "jircs_name";
     input.className = "jircs_input";
     send.className = "jircs_send";
-    status_message.className = "jircs_status_message";
+    status_normal.className = "jircs_status_normal";
+    status_connected.className = "jircs_status_connected";
+    status_account.className = "jircs_status_account";
     status_special.className = "jircs_status_special";
     status_hideulist.className = "jircs_status_hideulist";
     status_hideauction.className = "jircs_status_hideauction";
@@ -115,7 +121,11 @@ jIRCs.prototype.display = function(container) {
     input.type = 'text';
     send.type = "submit";
     send.value = "Send";
-    status_special.style.float = "right";
+    status_normal.style.width = "60%";
+    status_connected.innerHTML = this.connected ? "Connected" : "Disconnected";
+    status_account.appendChild(document.createTextNode(this.account ? "Logged in as "+this.account : "Not Logged In"));
+    status_special.style.width = "39%";
+    status_special.style.textAlign = "right";
     status_hideulist.href = "#";
     status_hideauction.href = "#";
     status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
@@ -140,10 +150,13 @@ jIRCs.prototype.display = function(container) {
     form.appendChild(name);
     form.appendChild(input);
     form.appendChild(send);
+    status_normal.appendChild(status_connected);
+    status_normal.appendChild(document.createTextNode(" | "));
+    status_normal.appendChild(status_account);
     status_special.appendChild(status_hideulist);
     status_special.appendChild(document.createTextNode(" | "));
     status_special.appendChild(status_hideauction);
-    status.appendChild(status_message);
+    status.appendChild(status_normal);
     status.appendChild(status_special);
     auction.appendChild(auction_image);
     auction.appendChild(auction_title);
@@ -351,7 +364,7 @@ jIRCs.prototype.render = function(disobj) {
         mesh += line.container.offsetHeight;
     }, this);
     // If it turns out we don't need scrollbars, fill in the extra space
-    if(mesh < disobj.messages.clientHeight) {
+    if(mesh + fudgeFactor < disobj.messages.clientHeight) {
         mesw = disobj.messages.clientWidth - timew - namew - fudgeFactor - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
         this.forEach(disobj.lines[disobj.viewing], function(line) {
             line.message.style.width = mesw + "px";
@@ -363,6 +376,7 @@ jIRCs.prototype.render = function(disobj) {
     disobj.widths[disobj.viewing].time = timew;
     disobj.widths[disobj.viewing].name = namew;
     disobj.widths[disobj.viewing].message = mesw;
+    disobj.widths[disobj.viewing].height = mesh + fudgeFactor;
 };
 
 jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
@@ -450,7 +464,15 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
             while(disobj.messages.children.length > this.scrollbackSize) {
                 disobj.messages.removeChild(disobj.messages.firstChild);
             }
-            if(widths.time > disobj.widths[disobj.viewing].time || widths.name > disobj.widths[disobj.viewing].name || widths.message > disobj.widths[disobj.viewing].message) {
+            if(
+                widths.time > disobj.widths[disobj.viewing].time ||
+                widths.name > disobj.widths[disobj.viewing].name ||
+                widths.message > disobj.widths[disobj.viewing].message ||
+                (
+                    disobj.widths[disobj.viewing].height < disobj.messages.clientHeight &&
+                    disobj.widths[disobj.viewing].height + r.offsetHeight >= disobj.messages.clientHeight
+                )
+            ) {
                 this.render(disobj); // Brute-force dimensions into submission
             }
         }
@@ -626,10 +648,19 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
     }, 5000);
 };
 
-jIRCs.prototype.renderStatus = function(message) {
+jIRCs.prototype.setConnected = function(connected) {
+    this.connected = connected;
     this.forEach(this.displays, function(disobj) {
-        disobj.status_message.innerHTML = "";
-        disobj.status_message.appendChild(document.createTextNode(message));
+        disobj.status_connected.innerHTML = connected ? "Connected" : "Disconnected";
+        this.render(disobj);
+    }, this);
+};
+
+jIRCs.prototype.setAccount = function(account) {
+    this.account = account;
+    this.forEach(this.displays, function(disobj) {
+        disobj.status_account.innerHTML = "";
+        disobj.status_account.appendChild(document.createTextNode(account ? "Logged in as "+account : "Not Logged In"));
         this.render(disobj);
     }, this);
 };

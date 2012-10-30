@@ -1,4 +1,5 @@
 jIRCs.prototype.command_NICK = function(args, disobj) {
+    args[0] = args[0].replace(" ","_");
     if(this.nick_regex.test(args[0])) {
         this.send('NICK',args);
     } else {

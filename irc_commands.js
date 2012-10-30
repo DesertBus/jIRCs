@@ -168,6 +168,13 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
             this.renderLine(disobj.viewing, nick, message, disobj);
         }, this);
     }
+    if(prefix == "NickServ") {
+        if(message.slice(0,34) == "You are now identified. Welcome, ") {
+            this.setAccount(message.slice(34,-1));
+        } else if(message.slice(0,22) == "You are now logged out") {
+            this.setAccount(false);
+        }
+    }
 };
 
 jIRCs.prototype.irc_MODE = function(prefix, args) {
@@ -323,6 +330,11 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
             this.render(disobj);
         }
     }, this);
+};
+
+jIRCs.prototype.irc_433 = function(prefix, args) {
+    this.nickname += "_";
+    this.send('NICK',[this.nickname]);
 };
 
 jIRCs.prototype.irc_unknown = function(prefix, args) {

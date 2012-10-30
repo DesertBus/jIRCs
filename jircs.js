@@ -41,6 +41,8 @@ function jIRCs(conn) {
     this.scrollbackSize = 500;
     this.nickname = '';
     this.registered = false;
+    this.connected = false;
+    this.account = false;
     this.conn = conn;
     this.conn.parent = this;
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
@@ -51,6 +53,7 @@ function jIRCs(conn) {
 jIRCs.prototype.version = 'jIRCs 0.1';
 
 jIRCs.prototype.nick = function(nick,pass) {
+    nick = nick.replace(" ","_");
     while(!this.nick_regex.test(nick) && nick) {
         nick = nick.slice(0,-1);
     }
@@ -130,7 +133,7 @@ if (!Array.prototype.indexOf) {
 /* Private interface */
 jIRCs.prototype.onconnect = function(evt) {
     console.log("Connected");
-    this.renderStatus('Connected to server.');
+    this.setConnected(true);
     this.forEach(this.queue, this.send, this);
     this.queue = [];
 };
@@ -143,7 +146,7 @@ jIRCs.prototype.ondisconnect = function(evt) {
         }
     }, this);
     console.log("Disconnected");
-    this.renderStatus('Disconnected from server.');
+    this.setConnected(false);
 };
 
 jIRCs.prototype.onmessage = function(evt) {
