@@ -378,7 +378,7 @@ jIRCs.prototype.render = function(disobj) {
     disobj.widths[disobj.viewing].time = timew;
     disobj.widths[disobj.viewing].name = namew;
     disobj.widths[disobj.viewing].message = mesw;
-    disobj.widths[disobj.viewing].height = mesh + fudgeFactor;
+    disobj.widths[disobj.viewing].height = mesh;
 };
 
 jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
