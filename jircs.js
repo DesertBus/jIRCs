@@ -61,6 +61,7 @@ jIRCs.prototype.nick = function(nick,pass) {
         nick = "Guest" + Math.floor(Math.random()*9000000 + 1000000);
     }
     this.nickname = nick;
+    allCookies.setItem("jirc-nickname", nick);
     this.send('CAP',['LS']);
     if(pass) {
         this.send('PASS',[pass]);

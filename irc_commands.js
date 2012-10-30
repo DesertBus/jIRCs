@@ -7,6 +7,7 @@ jIRCs.prototype.irc_NICK = function(prefix, args) {
         newNick = args.pop();
     if(oldNick == this.nickname) {
         this.nickname = newNick;
+        allCookies.setItem("jirc-nickname", this.nickname);
     }
     this.forEach(this.channels, function(c, channel) {
         if(c.names && oldNick in c.names) {
@@ -334,6 +335,7 @@ jIRCs.prototype.irc_TOPIC = function(prefix, args) {
 
 jIRCs.prototype.irc_433 = function(prefix, args) {
     this.nickname += "_";
+    allCookies.setItem("jirc-nickname", this.nickname);
     this.send('NICK',[this.nickname]);
 };
 
