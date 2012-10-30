@@ -828,7 +828,7 @@ jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
 };
 
 jIRCs.prototype.el_userentry_click = function(disobj, e) {
-    var nick = e.target.firstChild.nodeValue;
+    var nick = e.target.firstChild.nodeValue.toLowerCase();
     if(nick.charAt(0) in this.statusSymbols)
         nick = nick.substr(1);
     this.initChan(nick, disobj);
