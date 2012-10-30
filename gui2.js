@@ -23,6 +23,7 @@ jIRCs.prototype.display = function(container) {
     var status_connected = document.createElement("span");
     var status_account = document.createElement("span");
     var status_special = document.createElement("div");
+    var status_gethelp = document.createElement("a");
     var status_hideulist = document.createElement("a");
     var status_hideauction = document.createElement("a");
     var auction_image = document.createElement("img");
@@ -55,6 +56,7 @@ jIRCs.prototype.display = function(container) {
         'status_connected': status_connected,
         'status_account': status_account,
         'status_special': status_special,
+        'status_gethelp': status_gethelp,
         'status_hideulist': status_hideulist,
         'status_hideauction': status_hideauction,
         'auction_image': auction_image,
@@ -98,6 +100,7 @@ jIRCs.prototype.display = function(container) {
     status_connected.className = "jircs_status_connected";
     status_account.className = "jircs_status_account";
     status_special.className = "jircs_status_special";
+    status_gethelp.className = "jircs_status_gethelp";
     status_hideulist.className = "jircs_status_hideulist";
     status_hideauction.className = "jircs_status_hideauction";
     auction_image.className = "jircs_auction_image";
@@ -128,8 +131,10 @@ jIRCs.prototype.display = function(container) {
     status_special.style.display = "inline-block";
     status_special.style.width = "39%";
     status_special.style.textAlign = "right";
+    status_gethelp.href = "#";
     status_hideulist.href = "#";
     status_hideauction.href = "#";
+    status_gethelp.innerHTML = "Get Help";
     status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
     status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
     auction.style.display = "none";
@@ -155,6 +160,8 @@ jIRCs.prototype.display = function(container) {
     status_normal.appendChild(status_connected);
     status_normal.appendChild(document.createTextNode(" | "));
     status_normal.appendChild(status_account);
+    status_special.appendChild(status_gethelp);
+    status_special.appendChild(document.createTextNode(" | "));
     status_special.appendChild(status_hideulist);
     status_special.appendChild(document.createTextNode(" | "));
     status_special.appendChild(status_hideauction);
@@ -175,6 +182,7 @@ jIRCs.prototype.display = function(container) {
     this.listen(auction, "mouseup", this.el_auction_mouseup, disobj);
     this.listen(form, "submit", this.el_form_submit, disobj);
     this.listen(input, "keydown", this.el_input_keydown, disobj);
+    this.listen(status_gethelp, "click", this.el_gethelp_click, disobj);
     this.listen(status_hideulist, "click", this.el_hideulist_click, disobj);
     this.listen(status_hideauction, "click", this.el_hideauction_click, disobj);
     this.listen(auction_form, "submit", this.el_auction_form_submit, disobj);
@@ -810,6 +818,11 @@ jIRCs.prototype.el_hideulist_click = function(disobj, e) {
     disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
     disobj.status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
     this.render(disobj);
+};
+
+jIRCs.prototype.el_gethelp_click = function(disobj, e) {
+    this.cancelEvent(e);
+    this.send("JOIN",["#help"]);
 };
 
 jIRCs.prototype.el_hideauction_click = function(disobj, e) {
