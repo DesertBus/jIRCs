@@ -14,6 +14,8 @@
 .jircs_topic_creator {
     text-align: right;
 }
+.jircs_auction {
+}
 .jircs_window {
 }
 .jirc_chat {
@@ -35,6 +37,34 @@
 .jircs_send {
 }
 .jircs_status {
+}
+/* Status parts */
+.jircs_status_normal {
+}
+.jircs_status_connected {
+}
+.jircs_status_account {
+}
+.jircs_status_special {
+}
+.jircs_status_hideulist {
+}
+.jircs_status_hideauction {
+}
+/* Auction parts */
+.jircs_auction_image {
+}
+.jircs_auction_title {
+}
+.jircs_auction_bidder {
+}
+.jircs_auction_bid {
+}
+.jircs_auction_form {
+}
+.jircs_auction_input {
+}
+.jircs_auction_submit {
 }
 /* Chat messages */
 .jircs_chatRow {
