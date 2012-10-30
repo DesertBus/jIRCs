@@ -59,6 +59,7 @@ if($_SESSION['user']) {
                 centered.style.marginTop = "-50px";
                 centered.style.marginLeft = "-100px";
                 centered.style.textAlign = "center";
+                header.innerHTML = "Choose Yo Nick";
                 header.style.margin = "0";
                 input.type = "text";
                 input.style.width = "180px";
