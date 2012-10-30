@@ -208,7 +208,8 @@ jIRCs.prototype.initChan = function(channel, disobj) {
 jIRCs.prototype.destroyChan = function(channel) {
     if (channel != 'Status' && channel in this.channels) {
         //part channel
-        this.send("PART",[channel]);
+        if(channel.charAt(0) == "#")
+            this.send("PART",[channel]);
         //Iterate through displays
         this.forEach(this.displays, function(disobj) {
             //remove from DOM
