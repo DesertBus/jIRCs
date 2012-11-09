@@ -685,7 +685,7 @@ jIRCs.prototype.auctionStart = function(id, name) {
         if(disobj.options.show_auction) {
             disobj.auction.style.display = "block";
         }
-        disobj.auction_image.src = "http://desertbus.org/thumbs/irc/"+id+".png";
+        disobj.auction_image.src = "http://desertbus.org/images/prizes_irc/"+id+".png";
         disobj.auction_title.innerHTML = "";
         disobj.auction_title.appendChild(document.createTextNode(name));
         this.render(disobj);

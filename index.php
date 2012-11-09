@@ -2,7 +2,7 @@
 $password = "";
 
 session_start();
-if($_SESSION['user']) {
+if(FALSE && $_SESSION['user']) {
     mysql_connect("dbtest.fugiman.com","txircd","XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
     mysql_select_db("txircd");
     $result = mysql_fetch_assoc(mysql_query(sprintf("SELECT token FROM irc_tokens WHERE donor_id = %d AND ip = '%s'", $_SESSION['user'], mysql_real_escape_string($_SERVER['REMOTE_ADDR']))));
@@ -69,7 +69,7 @@ if($_SESSION['user']) {
                 submit.value = "Join Chat";
                 
                 form.onsubmit = function() {
-                    irc = new jIRCs(new SockJS("http://dbtest.fugiman.com:8080/"));
+                    irc = new jIRCs(new SockJS("https://irc.desertbus.org/"));
                     irc.nick(input.value,"<?php echo $password; ?>");
                     target.innerHTML = "";
                     irc.display(target);
