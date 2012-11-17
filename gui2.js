@@ -46,6 +46,11 @@ jIRCs.prototype.display = function(container) {
         'messages': messages,
         'notification': notification,
         'userlist': userlist,
+        'userlist_dict': {},
+        'ulistw': 0,
+        'ulisth': 0,
+        // How much do we skew our measurements by?
+        'fudgeFactor': 4,
         'inputbar': inputbar,
         'status': status,
         'form': form,
@@ -274,8 +279,6 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
 };
 
 jIRCs.prototype.render = function(disobj) {
-    // How much do we skew our measurements by?
-    var fudgeFactor = 4; //px
     // Re-generate topic
     disobj.topic.innerHTML = "";
     if(disobj.viewing in this.channels && this.channels[disobj.viewing].topic) {
@@ -303,7 +306,54 @@ jIRCs.prototype.render = function(disobj) {
     }
     // Re-generate auction
     // Re-generate userlist
-    var ulistw = 0, ulisth = 0;
+    this.renderUserList(disobj);
+    // Re-generate input bar
+    disobj.name.innerHTML = "";
+    disobj.name.appendChild(document.createTextNode(this.nickname+"\u00A0")); // \u00A0 = non-breaking space
+    disobj.input.style.width = "0px";
+    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth - disobj.fudgeFactor) + "px";
+    // Fix all the heights
+    disobj.window.style.height = "0px";
+    componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
+    disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
+    disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth - disobj.fudgeFactor) + "px";
+    disobj.messages.style.height = (disobj.window.clientHeight - disobj.notification.offsetHeight) + "px";
+    // Ensure standardized width of messages
+    var timew = 0, namew = 0, mesh = 0, mesw = 0;
+    // Calculate message width
+    this.forEach(disobj.lines[disobj.viewing], function(line) {
+        var dim;
+        dim = this.measureText(line.time.textContent || line.time.innerText, line.time.className);
+        timew = Math.max(dim["width"], timew);
+        dim = this.measureText(line.name.textContent || line.name.innerText, line.name.className);
+        namew = Math.max(dim["width"], namew);
+    }, this);
+    // Assume we need scrollbars
+    mesw = disobj.messages.clientWidth - timew - namew - disobj.fudgeFactor - this.calculateScrollWidth() - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
+    this.forEach(disobj.lines[disobj.viewing], function(line) {
+        line.time.style.width = timew + "px";
+        line.name.style.width = namew + "px";
+        line.message.style.width = mesw + "px";
+        mesh += line.container.offsetHeight;
+    }, this);
+    // If it turns out we don't need scrollbars, fill in the extra space
+    if(mesh + disobj.fudgeFactor < disobj.messages.clientHeight) {
+        mesw = disobj.messages.clientWidth - timew - namew - disobj.fudgeFactor - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
+        this.forEach(disobj.lines[disobj.viewing], function(line) {
+            line.message.style.width = mesw + "px";
+        }, this);
+    }
+    if(!(disobj.viewing in disobj.widths)) {
+        disobj.widths[disobj.viewing] = {};
+    }
+    disobj.widths[disobj.viewing].time = timew;
+    disobj.widths[disobj.viewing].name = namew;
+    disobj.widths[disobj.viewing].message = mesw;
+    disobj.widths[disobj.viewing].height = mesh + disobj.fudgeFactor;
+};
+
+jIRCs.prototype.renderUserList = function(disobj) {
+    disobj.ulistw = 0, disobj.ulisth = 0;
     if(disobj.viewing in this.channels) {
         disobj.userlist.innerHTML = "";
         var users = {};
@@ -320,6 +370,7 @@ jIRCs.prototype.render = function(disobj) {
             users[rank].push(prefix + u);
         }, this);
         // Add users to DOM
+        disobj.userlist_dict = {};
         this.forEach(this.statusOrder, function(r) {
             if(!(r in users)) {
                 return;
@@ -335,61 +386,46 @@ jIRCs.prototype.render = function(disobj) {
                 p.appendChild(document.createTextNode(u));
                 p.className = 'jircs_userlist_user';
                 disobj.userlist.appendChild(p);
+                if(u.charAt(0) in this.statusSymbols) {
+                    nick = u.substr(1);
+                } else {
+                    nick = u;
+                }
+                disobj.userlist_dict[u] = p;
                 var dim = this.measureText(u,'jircs_userlist_user');
-                ulistw = Math.max(dim["width"], ulistw);
-                ulisth += dim["height"];
+                disobj.ulistw = Math.max(dim["width"], disobj.ulistw);
+                disobj.ulisth += dim["height"];
             }, this);
         }, this);
     }
-    // Re-generate input bar
-    disobj.name.innerHTML = "";
-    disobj.name.appendChild(document.createTextNode(this.nickname+"\u00A0")); // \u00A0 = non-breaking space
-    disobj.input.style.width = "0px";
-    disobj.input.style.width = (disobj.inputbar.clientWidth - disobj.form.offsetWidth - fudgeFactor) + "px";
-    // Fix all the heights
-    disobj.window.style.height = "0px";
-    componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
-    disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
-    if(ulisth > disobj.window.clientHeight) {
-        disobj.userlist.style.width = (ulistw + fudgeFactor + this.calculateScrollWidth()) + 'px';
+    if(disobj.ulisth > disobj.window.clientHeight) {
+        disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor + this.calculateScrollWidth()) + 'px';
     } else {
-        disobj.userlist.style.width = (ulistw + fudgeFactor) + 'px';
+        disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor) + 'px';
     }
     disobj.userlist.style.height = disobj.window.clientHeight + "px";
-    disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth - fudgeFactor) + "px";
-    disobj.messages.style.height = (disobj.window.clientHeight - disobj.notification.offsetHeight) + "px";
-    // Ensure standardized width of messages
-    var timew = 0, namew = 0, mesh = 0, mesw = 0;
-    // Calculate message width
-    this.forEach(disobj.lines[disobj.viewing], function(line) {
-        var dim;
-        dim = this.measureText(line.time.textContent || line.time.innerText, line.time.className);
-        timew = Math.max(dim["width"], timew);
-        dim = this.measureText(line.name.textContent || line.name.innerText, line.name.className);
-        namew = Math.max(dim["width"], namew);
-    }, this);
-    // Assume we need scrollbars
-    mesw = disobj.messages.clientWidth - timew - namew - fudgeFactor - this.calculateScrollWidth() - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
-    this.forEach(disobj.lines[disobj.viewing], function(line) {
-        line.time.style.width = timew + "px";
-        line.name.style.width = namew + "px";
-        line.message.style.width = mesw + "px";
-        mesh += line.container.offsetHeight;
-    }, this);
-    // If it turns out we don't need scrollbars, fill in the extra space
-    if(mesh + fudgeFactor < disobj.messages.clientHeight) {
-        mesw = disobj.messages.clientWidth - timew - namew - fudgeFactor - this.measureText("","jircs_chatText jircs_action jircs_hilight")["width"];
-        this.forEach(disobj.lines[disobj.viewing], function(line) {
-            line.message.style.width = mesw + "px";
-        }, this);
+};
+
+jIRCs.prototype.addUser = function(disobj, user) {
+    this.renderUserList(disobj);
+    disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth - disobj.fudgeFactor) + "px";
+};
+
+jIRCs.prototype.removeUser = function(disobj, user) {
+    if (user in disobj.userlist_dict) {
+        var entry = disobj.userlist_dict[user];
+        disobj.userlist.removeChild(entry);
+        delete disobj.userlist_dict[user];
+
+        // just measuring size of nickname, not including @, &, ~, but we are only using the height here
+        var dim = this.measureText(user, 'jircs_userlist_user');
+        disobj.ulisth -= dim["height"];
+        if(disobj.ulisth > disobj.window.clientHeight) {
+            disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor + this.calculateScrollWidth()) + 'px';
+        } else {
+            disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor) + 'px';
+        }
     }
-    if(!(disobj.viewing in disobj.widths)) {
-        disobj.widths[disobj.viewing] = {};
-    }
-    disobj.widths[disobj.viewing].time = timew;
-    disobj.widths[disobj.viewing].name = namew;
-    disobj.widths[disobj.viewing].message = mesw;
-    disobj.widths[disobj.viewing].height = mesh + fudgeFactor;
 };
 
 jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {

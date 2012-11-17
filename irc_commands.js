@@ -41,7 +41,7 @@ jIRCs.prototype.irc_JOIN = function(prefix, args) {
             this.activateChan(channel, disobj);
         }
         if(disobj.viewing == channel) {
-            this.render(disobj);
+            this.addUser(disobj);
         }
     }, this);
 };
@@ -56,7 +56,7 @@ jIRCs.prototype.irc_PART = function(prefix, args) {
         delete(this.channels[channel].names[prefix]);
         this.forEach(this.displays, function(disobj) {
             if(disobj.viewing == channel) {
-                this.render(disobj);
+                this.removeUser(disobj, prefix);
             }
         }, this);
     }
@@ -77,7 +77,7 @@ jIRCs.prototype.irc_QUIT = function(prefix, args) {
         // Let ondisconnect handle cleanup
     } else {
         this.forEach(this.displays, function(disobj) {
-            this.render(disobj);
+            this.removeUser(disobj, prefix);
         }, this);
     }
 };
