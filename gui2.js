@@ -655,11 +655,13 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
     disobj.notification.innerHTML = "";
     disobj.notification.appendChild(document.createTextNode(message));
     this.render(disobj);
-    disobj.note_timer = setTimeout(function() {
+    disobj.note_timer = setTimeout(this.clearNotifications.bind(this, disobj), 5000);
+};
+
+jIRCs.prototype.clearNotifications = function(disobj){
         disobj.notification.innerHTML = "";
         this.render(disobj);
         disobj.note_timer = false;
-    }, 5000);
 };
 
 jIRCs.prototype.setConnected = function(connected) {
