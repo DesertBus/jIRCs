@@ -47,7 +47,7 @@
                 submit.value = "Join Chat";
                 
                 form.onsubmit = function() {
-                    irc = new jIRCs(new SockJS("https://irc.desertbus.org/"));
+                    var irc = new jIRCs(function(){return new SockJS("https://irc.desertbus.org/");});
                     irc.nick(input.value,"");
                     target.innerHTML = "";
                     irc.display(target);
