@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+<meta charset="utf-8" />
     <head>
         <title>jIRCs Test</title>
         <link rel="stylesheet" type="text/css" href="jircs.css" />
