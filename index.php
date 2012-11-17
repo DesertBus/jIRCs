@@ -1,32 +1,10 @@
-<?php
-$password = "";
-
-session_start();
-if(FALSE && $_SESSION['user']) {
-    mysql_connect("dbtest.fugiman.com","txircd","XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-    mysql_select_db("txircd");
-    $result = mysql_fetch_assoc(mysql_query(sprintf("SELECT token FROM irc_tokens WHERE donor_id = %d AND ip = '%s'", $_SESSION['user'], mysql_real_escape_string($_SERVER['REMOTE_ADDR']))));
-    if($result) {
-        $password = $result["token"];
-    } else {
-        $password = hash("sha256",uniqid($_SERVER['REMOTE_ADDR'],true));
-        mysql_query(sprintf("INSERT INTO irc_tokens(token,donor_id,ip) VALUES('%s',%d,'%s')", $password, $_SESSION['user'], mysql_real_escape_string($_SERVER['REMOTE_ADDR'])));
-    }
-}
-?>
 <!doctype html>
 <html>
     <head>
         <title>jIRCs Test</title>
         <link rel="stylesheet" type="text/css" href="jircs.css" />
         <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
-        <script src="cookies.js"></script>
-        <script src="jircs.js"></script>
-        <script src="utils.js"></script>
-        <script src="gui2.js"></script>
-        <script src="irc_commands.js"></script>
-        <script src="user_commands.js"></script>
-        <script src="ctcp_commands.js"></script>
+        <script src="jircs.min.js"></script>
         <style>html, body, #jircs { height: 100%; width: 100%; margin: 0; }</style>
     </head>
     <body> 
@@ -70,7 +48,7 @@ if(FALSE && $_SESSION['user']) {
                 
                 form.onsubmit = function() {
                     irc = new jIRCs(new SockJS("https://irc.desertbus.org/"));
-                    irc.nick(input.value,"<?php echo $password; ?>");
+                    irc.nick(input.value,"");
                     target.innerHTML = "";
                     irc.display(target);
                     

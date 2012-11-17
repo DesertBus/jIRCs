@@ -102,7 +102,6 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
         } else {
             args = message.split(' ');
             var method = 'ctcp_' + args.shift().toUpperCase();
-            console.log("<<<<<< " + method + "('" + channel + "'," + JSON.stringify(args) + ")");
             if(method in this) {
                 this[method](channel, args);
             }
@@ -113,16 +112,6 @@ jIRCs.prototype.irc_PRIVMSG = function(prefix, args) {
     if(prefix == "BidServ") {
         var cleaned = message.replace("\u0001","").replace("\u0002","").replace("\u00034","").replace("\u000F","").replace("\u0016","").replace("\u001D","").replace("\u001F","");
         var parts = cleaned.split(" ");
-        console.debug(
-            cleaned,
-            parts,
-            parts.slice(0,2).join(" "),
-            parts.slice(0,3).join(" "),
-            ~cleaned.indexOf("has the high bid of"),
-            ~cleaned.indexOf("New highest bid is by"),
-            parts.slice(0,1).join(" ") == "Auction for" && ~cleaned.indexOf("cancelled"),
-            parts[0] == "Sold!"
-        );
         if(parts.slice(0,2).join(" ") == "Starting Auction") {
             var id = parts[4].slice(1,-1);
             var name = parts.slice(5,-4).join(" ").slice(1,-2);
@@ -176,6 +165,12 @@ jIRCs.prototype.irc_NOTICE = function(prefix, args) {
             this.setAccount(false);
         }
     }
+};
+
+jIRCs.prototype.irc_KICK = function(prefix, args) {
+    var channel = args.shift().toLowerCase();
+    var message = args.pop();
+    this.renderLine(channel, "<"+prefix+">", "\u00034You have been kicked from "+channel+" (Reason: "+message+")");
 };
 
 jIRCs.prototype.irc_MODE = function(prefix, args) {

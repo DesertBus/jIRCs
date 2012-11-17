@@ -54,7 +54,6 @@ jIRCs.prototype.parseMessage = function(s) {
     }
     command = args.shift();
     method = 'irc_' + command.toUpperCase();
-    console.log("<<< " + method + "('" + p + "'," + JSON.stringify(args) + ")");
     if(method in this) {
         this[method](p, args);
     } else {

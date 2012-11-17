@@ -27,7 +27,7 @@ OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 /* Public interface */
-function jIRCs(conn) {
+function jIRCs(conn_generator) {
     this.buf = '';
     this.queue = [];
     this.displays = [];
@@ -39,11 +39,14 @@ function jIRCs(conn) {
     this.chanModes = {};
     this.userModes = [];
     this.scrollbackSize = 500;
+    this.reconnect_delay = 0;
     this.nickname = '';
+    this.password = '';
     this.registered = false;
     this.connected = false;
     this.account = false;
-    this.conn = conn;
+    this.conn_generator = conn_generator;
+    this.conn = conn_generator();
     this.conn.parent = this;
     this.conn.onopen = function(e) { this.parent.onconnect(e); };
     this.conn.onmessage = function(e) { this.parent.onmessage(e); };
@@ -61,6 +64,7 @@ jIRCs.prototype.nick = function(nick,pass) {
         nick = "Guest" + Math.floor(Math.random()*9000000 + 1000000);
     }
     this.nickname = nick;
+    this.password = pass;
     allCookies.setItem("jirc-nickname", nick);
     this.send('CAP',['LS']);
     if(pass) {
@@ -133,8 +137,7 @@ if (!Array.prototype.indexOf) {
 
 /* Private interface */
 jIRCs.prototype.onconnect = function(evt) {
-    console.log("Connected");
-    this.setConnected(true);
+    this.setConnected("Connected");
     this.forEach(this.queue, this.send, this);
     this.queue = [];
 };
@@ -146,8 +149,26 @@ jIRCs.prototype.ondisconnect = function(evt) {
             this.destroyChan(channel);
         }
     }, this);
-    console.log("Disconnected");
-    this.setConnected(false);
+    this.setConnected("Disconnected");
+    
+    this.reconnect_delay = 15;
+    this.reconnect();
+};
+
+jIRCs.prototype.reconnect = function() {
+    if(this.reconnect_delay > 0) {
+        this.setConnected("Reconnecting in "+this.reconnect_delay+"...");
+        this.reconnect_delay--;
+        setTimeout(this.reconnect.bind(this), 1000);
+    } else {
+        this.setConnected("Reconnecting...");
+        irc = new jIRCs(this.conn_generator);
+        irc.nick(this.nickname, this.password);
+        this.forEach(this.displays, function(disobj) {
+            disobj.container.innerHTML = "";
+            irc.display(disobj.container);
+        }, this);
+    }
 };
 
 jIRCs.prototype.onmessage = function(evt) {
@@ -163,10 +184,8 @@ jIRCs.prototype.send = function(command, args) {
         msg += ' ' + args.join(' ');
     }
     if(this.conn.readyState == 1) { //OPEN
-        console.log('>>> ' + msg);
         this.conn.send(msg + '\r\n');
     } else {
-        console.log('||| ' + msg);
         this.queue.push(msg);
     }
 };

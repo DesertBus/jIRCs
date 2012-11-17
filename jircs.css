@@ -1,13 +1,22 @@
+/* Global stuff */
+.jircs_main a, .jircs_main a:link, .jircs_main a:visited {
+    color: #009;
+}
+.jircs_main a:hover {
+    color: #99F;
+}
+
 /* The major elements */
 .jircs_main {
     width: 100%;
+    font-family: Calibri, Verdana, Tahoma, Optima, Arial, sans-serif;
+    font-size: 16px;
 }
 .jircs_tabbar {
     background-color: #AAA;
-    border-radius: 5px 5px 0px 0px;
 }
 .jircs_topic {
-    font-size: 0.8em;
+    font-size: 0.85em;
 }
 .jircs_topic_message {
 }
@@ -37,6 +46,7 @@
 .jircs_send {
 }
 .jircs_status {
+    font-size: 0.85em;
 }
 /* Status parts */
 .jircs_status_normal {

@@ -125,18 +125,18 @@ jIRCs.prototype.display = function(container) {
     send.type = "submit";
     send.value = "Send";
     status_normal.style.display = "inline-block";
-    status_normal.style.width = "60%";
+    status_normal.style.width = "45%";
     status_connected.innerHTML = this.connected ? "Connected" : "Disconnected";
     status_account.appendChild(document.createTextNode(this.account ? "Logged in as "+this.account : "Not Logged In"));
     status_special.style.display = "inline-block";
-    status_special.style.width = "39%";
+    status_special.style.width = "54%";
     status_special.style.textAlign = "right";
     status_gethelp.href = "#";
     status_hideulist.href = "#";
     status_hideauction.href = "#";
     status_gethelp.innerHTML = "Get Help";
-    status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
-    status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
+    status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Users" : "Show Users";
+    status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Bar" : "Show Auction Bar";
     auction.style.display = "none";
     auction_input.type = "text";
     auction_submit.type = "submit";
@@ -420,7 +420,7 @@ jIRCs.prototype.renderLine = function(channel, speaker, message, disobj) {
     date.appendChild(document.createTextNode('[' + (h.length > 1 ? h : '0'+h) + ':' + (m.length > 1 ? m : '0'+m) + ':' + (s.length > 1 ? s : '0'+s) + ']'));
     user.appendChild(document.createTextNode("\u00A0"+speaker+"\u00A0")); // \u00A0 = non-breaking space
     text.appendChild(document.createTextNode(message));
-    var nickCheck = new RegExp("\\b" + this.cleanRegex(this.nickname) + "\\b");
+    var nickCheck = new RegExp("\\b" + this.cleanRegex(this.nickname) + "\\b",'ig');
     text.innerHTML = this.formatLine(text.innerHTML);
     var widths = {
         "time": this.measureText(date.textContent || date.innerText, date.className).width,
@@ -663,9 +663,9 @@ jIRCs.prototype.renderNotification = function(message, disobj) {
 };
 
 jIRCs.prototype.setConnected = function(connected) {
-    this.connected = connected;
+    this.connected = connected == "Disconnected";
     this.forEach(this.displays, function(disobj) {
-        disobj.status_connected.innerHTML = connected ? "Connected" : "Disconnected";
+        disobj.status_connected.innerHTML = connected;
         this.render(disobj);
     }, this);
 };
@@ -725,6 +725,7 @@ jIRCs.prototype.el_container_mousedown = function(disobj, e) {
 jIRCs.prototype.el_container_mouseup = function(disobj, e) {
     if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
         disobj.input.focus();
+        return;
     }
     var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
     if(dx < 0) {
@@ -742,6 +743,7 @@ jIRCs.prototype.el_auction_mouseup = function(disobj, e) {
     if(!('mouse' in disobj && 'x' in disobj.mouse && 'y' in disobj.mouse)) {
         disobj.auction_input.focus();
         this.cancelEvent(e);
+        return;
     }
     var dx = disobj.mouse.x - e.screenX, dy = disobj.mouse.y - e.screenY;
     if(dx < 0) {
@@ -816,7 +818,7 @@ jIRCs.prototype.el_hideulist_click = function(disobj, e) {
     this.cancelEvent(e);
     disobj.options.show_userlist = !disobj.options.show_userlist;
     disobj.userlist.style.display = disobj.options.show_userlist ? "inline-block" : "none";
-    disobj.status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Userlist" : "Show Userlist";
+    disobj.status_hideulist.innerHTML = disobj.options.show_userlist ? "Hide Users" : "Show Users";
     this.render(disobj);
 };
 
@@ -829,8 +831,8 @@ jIRCs.prototype.el_hideauction_click = function(disobj, e) {
     this.cancelEvent(e);
     disobj.options.show_auction = !disobj.options.show_auction;
     disobj.auction.style.display = disobj.options.show_auction && disobj.auction_running ? "block" : "none";
-    disobj.status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Banner" : "Show Auction Banner";
-    self.render(disobj);
+    disobj.status_hideauction.innerHTML = disobj.options.show_auction ? "Hide Auction Bar" : "Show Auction Bar";
+    this.render(disobj);
 };
 
 jIRCs.prototype.el_auction_form_submit = function(disobj, e) {
