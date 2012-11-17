@@ -46,6 +46,10 @@ jIRCs.prototype.display = function(container) {
         'messages': messages,
         'notification': notification,
         'userlist': userlist,
+        'ulistw': 0,
+        'ulisth': 0,
+        // How much do we skew our measurements by?
+        'fudgeFactor': 4,
         'inputbar': inputbar,
         'status': status,
         'form': form,
@@ -274,8 +278,6 @@ jIRCs.prototype.activateChan = function(channel, disobj) {
 };
 
 jIRCs.prototype.render = function(disobj) {
-    // How much do we skew our measurements by?
-    var fudgeFactor = 4; //px
     // Re-generate topic
     disobj.topic.innerHTML = "";
     if(disobj.viewing in this.channels && this.channels[disobj.viewing].topic) {
@@ -303,7 +305,7 @@ jIRCs.prototype.render = function(disobj) {
     }
     // Re-generate auction
     // Re-generate userlist
-    var ulistw = 0, ulisth = 0;
+    disobj.ulistw = 0, disobj.ulisth = 0;
     if(disobj.viewing in this.channels) {
         disobj.userlist.innerHTML = "";
         var users = {};
@@ -336,8 +338,8 @@ jIRCs.prototype.render = function(disobj) {
                 p.className = 'jircs_userlist_user';
                 disobj.userlist.appendChild(p);
                 var dim = this.measureText(u,'jircs_userlist_user');
-                ulistw = Math.max(dim["width"], ulistw);
-                ulisth += dim["height"];
+                disobj.ulistw = Math.max(dim["width"], disobj.ulistw);
+                disobj.ulisth += dim["height"];
             }, this);
         }, this);
     }
@@ -350,10 +352,10 @@ jIRCs.prototype.render = function(disobj) {
     disobj.window.style.height = "0px";
     componentHeight = disobj.tabbar.offsetHeight + disobj.topic.offsetHeight + disobj.auction.offsetHeight + disobj.window.offsetHeight + disobj.inputbar.offsetHeight + disobj.status.offsetHeight;
     disobj.window.style.height = (disobj.container.clientHeight - componentHeight) + "px";
-    if(ulisth > disobj.window.clientHeight) {
-        disobj.userlist.style.width = (ulistw + fudgeFactor + this.calculateScrollWidth()) + 'px';
+    if(disobj.ulisth > disobj.window.clientHeight) {
+        disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor + this.calculateScrollWidth()) + 'px';
     } else {
-        disobj.userlist.style.width = (ulistw + fudgeFactor) + 'px';
+        disobj.userlist.style.width = (disobj.ulistw + disobj.fudgeFactor) + 'px';
     }
     disobj.userlist.style.height = disobj.window.clientHeight + "px";
     disobj.chat.style.width = (disobj.window.clientWidth - disobj.userlist.offsetWidth - fudgeFactor) + "px";
